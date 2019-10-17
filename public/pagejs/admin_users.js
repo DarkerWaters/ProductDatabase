@@ -114,6 +114,49 @@ function splitId(elementToSplit) {
     return [idString.substring(0, index), idString.substring(index + 1, idString.length)];
 }
 
+var nextSearch = null;
+function getAllUsers() {
+    var container = document.getElementById('found_user_container');
+    container.innerHTML = "Searching for all users (in batches of 25).";
+    // get all the users and add them to the list
+    if (!nextSearch) {
+        nextSearch = firebase.firestore().collection('users').orderBy("name_lc").limit(25);
+    }
+    // perform the search now
+    nextSearch.get()
+        .then(function (querySnapshot) {
+            // Get the last visible document
+            if (!querySnapshot.empty) {
+                var lastVisible = querySnapshot.docs[querySnapshot.docs.length-1];
+                if (lastVisible) {
+                    // Construct a new query starting at this document to get the next 25 users.
+                    nextSearch = firebase.firestore().collection("users")
+                            .orderBy("name_lc")
+                            .startAfter(lastVisible)
+                            .limit(25);
+                    document.getElementById('search_all_button').innerHTML = "next 25";
+                }
+                else {
+                    nextSearch = null;
+                    document.getElementById('search_all_button').innerHTML = "List all users";
+                }
+            }
+            else {
+                nextSearch = null;
+                document.getElementById('search_all_button').innerHTML = "List all users";
+            }
+            // and show all this data
+            querySnapshot.forEach(function (doc) {
+                // for each user, add the user to the container
+                displayUserData(container, doc);
+            });
+        })
+        .catch(function(error) {
+            // this didn't work
+            container.innerHTML = "Sorry: failed to find any more users: " + error;
+        });
+}
+
 function displayUserData(container, doc) {
     var userDiv = document.getElementById('user_template').cloneNode(true);
     container.appendChild(userDiv);
