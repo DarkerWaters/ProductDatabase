@@ -179,6 +179,110 @@ var sanitizeHTML = function (str) {
 
 
 const firebaseData = {
+
+    collectionCategories : 'item_categories',
+    collectionItems : 'items',
+    collectionQuantities : 'quantities',
+    collectionUsers : 'users',
+
+    lcRef : function (str) {
+        if (!str) {
+            return str;
+        }
+        else {
+            return str.replace(/\s/g,'').toLowerCase();
+        }
+    },
+
+    lcWords : function(str) {
+        if (!str) {
+            return [];
+        }
+        else {
+            return str.toLowerCase().split(/\s/);
+        }
+    },
+
+    defaultCategory : function(categoryName) {
+        return firebaseData.autoCompleteData({
+            name : categoryName ? categoryName : 'New Category',
+            name_lc : firebaseData.lcRef(categoryName),
+            words : firebaseData.lcWords(categoryName),
+            items : [],
+            image : null,
+            description : 'A newly created category',
+            notes : '',
+        });
+    },
+
+    defaultItem : function(categoryDocId, categoryData, itemName, qualityStr) {
+        return firebaseData.autoCompleteData({
+            name : itemName ? itemName : "New Item",
+            name_lc : firebaseData.lcRef(itemName),
+            category_name : categoryData.name,
+            category_ref : firebase.firestore().doc(firebaseData.collectionCategories + '/' + categoryDocId),
+            quality : qualityStr,
+            quantities : [],
+            image : null,
+            description : 'A newly created item',
+            notes : '',
+            physical : '',
+            colours : '',
+            supplier : '',
+        });
+    },
+
+    defaultQuantity : function (itemDocId, itemData, quantityNumber, gbpValue, gbpNotes, usdValue, usdNotes, audValue, audNotes, notesValue) {
+        return firebaseData.autoCompleteData({
+            category_name : itemData.category_name,
+            category_ref : itemData.category_ref,
+            item_ref : firebase.firestore().doc(firebaseData.collectionItems + '/' + itemDocId),
+            item_name : itemData.name,
+            item_quality : itemData.quality,
+            quantity : Number(quantityNumber),
+            gpb : Number(gbpValue),
+            gpb_notes : gbpNotes ? gbpNotes : '',
+            usd : Number(usdValue),
+            usd_notes : usdNotes ? usdNotes : '',
+            aud : Number(audValue),
+            aud_notes : audNotes ? audNotes : '',
+            notes : notesValue ? notesValue : '',
+        });
+    },
+
+    autoCompleteData : function(docData) {
+        // complete the data on this object, first remove spaces and lower case the name for searching
+        if (docData.name) {
+            docData.name_lc = firebaseData.lcRef(docData.name);
+        }
+        if (docData.quality) {
+            docData.quality_lc = firebaseData.lcRef(docData.quality);
+        }
+        if (docData.supplier) {
+            docData.supplier_lc = firebaseData.lcRef(docData.supplier);
+        }
+        // now concatonate all the entries into an array of words to use
+        var wordsArray = []
+        if (docData.name) {
+            wordsArray = wordsArray.concat(firebaseData.lcWords(docData.name));
+        }
+        if (docData.quality) {
+            wordsArray = wordsArray.concat(firebaseData.lcWords(docData.quality));
+        }
+        if (docData.category_name) {
+            wordsArray = wordsArray.concat(firebaseData.lcWords(docData.category_name));
+        }
+        if (docData.item_name) {
+            wordsArray = wordsArray.concat(firebaseData.lcWords(docData.item_name));
+        }
+        if (docData.item_quality) {
+            wordsArray = wordsArray.concat(firebaseData.lcWords(docData.item_quality));
+        }
+        // set this data
+        docData.words = wordsArray;
+        return docData;
+    },
+
     getUser : function () {
         return firebase.auth().currentUser;
     },
@@ -190,7 +294,7 @@ const firebaseData = {
             var userUid = user.uid;
             var fData = this;
             // get the data for the user
-            firebase.firestore().collection('users').doc(userUid).get()
+            firebase.firestore().collection(firebaseData.collectionUsers).doc(userUid).get()
             .then(function(doc) {
                 if (doc && doc.exists) {
                     // do stuff with the data
@@ -222,7 +326,7 @@ const firebaseData = {
             email_lc: user.email.toLowerCase(),
             isAdmin: false
         };
-        firebase.firestore().collection('users').doc(user.uid).set(newUserData, {merge: true})
+        firebase.firestore().collection(firebaseData.collectionUsers).doc(user.uid).set(newUserData, {merge: true})
             .then(function() {
                 // this worked
                 console.log('added user data', user);
@@ -268,5 +372,131 @@ const firebaseData = {
     
     isUserAdmin : function(firebaseUserData) {
         return firebaseUserData['isAdmin'];
+    },
+
+    addNewItemCategory : function(categoryData, onSuccess, onFailure) {
+        firebase.firestore().collection(this.collectionCategories).add(categoryData)
+            .then(function(newDocRef) {
+                // this worked
+                onSuccess ?  onSuccess(newDocRef) : null;
+            })
+            .catch(function(error) {
+                // this didn't work
+                onFailure ? onFailure(error) : console.log("Failed to add the document: ", error);
+            });
+    },
+
+    addNewItem : function(itemData, onSuccess, onFailure) {
+        firebase.firestore().collection(this.collectionItems).add(itemData)
+            .then(function(newDocRef) {
+                // this worked
+                onSuccess ?  onSuccess(newDocRef) : null;
+            })
+            .catch(function(error) {
+                // this didn't work
+                onFailure ? onFailure(error) : console.log("Failed to add the document: ", error);
+            });
+    },
+
+    addNewQuantity : function(quantityData, onSuccess, onFailure) {
+        firebase.firestore().collection(this.collectionQuantities).add(quantityData)
+            .then(function(newDocRef) {
+                // this worked
+                onSuccess ?  onSuccess(newDocRef) : null;
+            })
+            .catch(function(error) {
+                // this didn't work
+                onFailure ? onFailure(error) : console.log("Failed to add the document: ", error);
+            });
+    },
+    
+    getCategoryByName : function(categoryName, onSuccess, onFailure) {
+        // return the correct category
+        firebase.firestore().collection(this.collectionCategories).where("name_lc", "==", firebaseData.lcRef(categoryName)).get()
+            .then(function(querySnapshot) {
+                // this worked
+                onSuccess ?  onSuccess(querySnapshot) : null;
+            })
+            .catch(function(error) {
+                // this didn't work
+                onFailure ? onFailure(error) : console.log("Failed to get any matching documents: ", error);
+            });
+    },
+    
+    getItemInCategoryByName : function(categoryDocId, itemName, onSuccess, onFailure) {
+        // return the correct item
+        var categoryRef = firebase.firestore().doc(firebaseData.collectionCategories + '/' + categoryDocId);
+        firebase.firestore().collection(this.collectionItems)
+            .where("name_lc", "==", firebaseData.lcRef(itemName))
+            .where("category_ref", "==", categoryRef).get()
+            .then(function(querySnapshot) {
+                // this worked
+                onSuccess ?  onSuccess(querySnapshot) : null;
+            })
+            .catch(function(error) {
+                // this didn't work
+                onFailure ? onFailure(error) : console.log("Failed to get any matching documents: ", error);
+            });
+    },
+    
+    getItemQuantityByNumber : function(itemDocId, quantityNumber, onSuccess, onFailure) {
+        // return the correct item quantity
+        var itemRef = firebase.firestore().doc(firebaseData.collectionItems + '/' + itemDocId);
+        firebase.firestore().collection(this.collectionQuantities)
+            .where("quantity", "==", quantityNumber)
+            .where("item_ref", "==", itemRef).get()
+            .then(function(querySnapshot) {
+                // this worked
+                onSuccess ?  onSuccess(querySnapshot) : null;
+            })
+            .catch(function(error) {
+                // this didn't work
+                onFailure ? onFailure(error) : console.log("Failed to get any matching documents: ", error);
+            });
+    },
+
+    updateCategoryData : function (categoryDocId, categoryData, onSuccess, onFailure) {
+        // we want to auto create the name_lc and the words from the data passed
+        this.autoCompleteData(categoryData);
+        // and send the update
+        firebase.firestore().collection(this.collectionCategories).doc(categoryDocId).update(categoryData)
+            .then(function() {
+                // this worked
+                onSuccess ? onSuccess() : null;
+            })
+            .catch(function(error) {
+                // this failed
+                onFailure ? onFailure(error) : console.log("Failed to update the document: ", error);
+            });
+    },
+
+    updateItemData : function (itemDocId, itemData, onSuccess, onFailure) {
+        // we want to auto create the name_lc and the words from the data passed
+        this.autoCompleteData(itemData);
+        // and send the update
+        firebase.firestore().collection(this.collectionItems).doc(itemDocId).update(itemData)
+            .then(function() {
+                // this worked
+                onSuccess ? onSuccess() : null;
+            })
+            .catch(function(error) {
+                // this failed
+                onFailure ? onFailure(error) : console.log("Failed to update the document: ", error);
+            });
+    },
+
+    updateQuantityData : function (quantityDocId, quantityData, onSuccess, onFailure) {
+        // we want to auto create the name_lc and the words from the data passed
+        this.autoCompleteData(quantityData);
+        // and send the update
+        firebase.firestore().collection(this.collectionQuantities).doc(quantityDocId).update(quantityData)
+            .then(function() {
+                // this worked
+                onSuccess ? onSuccess() : null;
+            })
+            .catch(function(error) {
+                // this failed
+                onFailure ? onFailure(error) : console.log("Failed to update the document: ", error);
+            });
     },
 };

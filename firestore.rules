@@ -27,5 +27,20 @@ service cloud.firestore {
       allow update : if (noInvalidDataChange() && isRequestingUser(userId)) || isAdmin();
       allow create: if noInvalidDataChange() && isRequestingUser(userId);
     }
+    // Allow public read access to user data, but only admins can create and edit
+    match /item_categories/{categoryId}/{documents=**} {
+      allow create, write, delete, update : if isAdmin();
+	    allow read : if request.auth.uid != null;
+    }
+    // Allow public read access to user data, but only admins can create and edit
+    match /items/{categoryId}/{documents=**} {
+      allow create, write, delete, update : if isAdmin();
+	    allow read : if request.auth.uid != null;
+    }
+    // Allow public read access to user data, but only admins can create and edit
+    match /quantities/{categoryId}/{documents=**} {
+      allow create, write, delete, update : if isAdmin();
+	    allow read : if request.auth.uid != null;
+    }
   }
 }

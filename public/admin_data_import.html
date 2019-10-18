@@ -22,15 +22,18 @@
 	<!-- initialize the SDK after all desired features are loaded -->
 	<script defer src="/__/firebase/init.js"></script>
 
-	<!-- add our page specific javascript here -->
-	<script src="pagejs/admin_users.js"></script>
-
 	<!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
 	<script src="js/jquery.min.js"></script>
 	<script src="js/jquery.dropotron.min.js"></script>
 	<script src="js/jquery.scrollgress.min.js"></script>
 	<script src="js/jquery.scrolly.min.js"></script>
 	<script src="js/jquery.slidertron.min.js"></script>
+
+	<!-- add our page specific javascript here after jQuery as using that in the .csv import js-->
+	<script src="pagejs/admin_data_import.js"></script>
+	<script src="js/jquery.csv.js"></script>
+
+	<!-- and the template style things here-->
 	<script src="js/skel.min.js"></script>
 	<script src="js/skel-layers.min.js"></script>
 	<script src="js/firebase.js"></script>
@@ -72,60 +75,67 @@
 		</nav>
 	</header>
 
+	<div id="container">
+		<section id="content">
+			
+		</section>
+	</div>
+
+	<script src="http://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>
+	<script src="js/jquery.csv.js"></script>
+	<script>
+	</script>
+
 	<!-- Main -->
 	<section id="main" class="wrapper style1">
 		<div class="container">
 			<header class="major">
-				<h4>Administer Users</h4>
-				<p>A remote control over your users, for more functionality go to the <a href="https://console.firebase.google.com/">firebase</a> console...</p>
+				<h4>Import Data</h4>
+				<p>Import data in bulk from .csv files to the <a href="https://console.firebase.google.com/">firestore</a> data store...</p>
 			</header>
 			<form id='data_form' method="post" action="onPostData()">
 				<header class="major">
-					<h3>User Search</h3>
+					<h3>Import Pricing List</h3>
+					<input type="file" id="files" name="files[]" value="File" class="alt" multiple style="display: none;"/>
+					<label id="import_files_label" for="files"></label>
+					<a class="button special" id='import_loaded_data' onclick="importLoadedData();" style="display: none;">Import Selected Rows.</a>
+					<span id="progress_text"></span>
+					<progress id="progress_display" max="1" value="0.0"></progress>
 				</header>
-				<div class="row uniform">
-					<div class="4u 12u(3)">
-						<input type="text" name="name" id="name" value="" placeholder="Name" />
-						<label for="name">Name</label>
-						<a class="button special" id='search_name_button' onclick="searchUserNames();">Find...</a>
-					</div>
-					<div class="4u 12u(3)">
-						<input type="email" name="email" id="email" value="" placeholder="Email" />
-						<label for="email">Email</label>
-						<a class="button special" id='search_email_button' onclick="searchUserEmails();">Find...</a>
-					</div>
-					<div class="4u 12u(3)">
-						<a class="button special" id='search_admin_button' onclick="getAllAdministrator();">Find all Administrators</a>
-						<a class="button special" id='search_all_button' onclick="getAllUsers();">List all Users</a>
-					</div>
-				</div>
 				<hr>
 				<div style="display: none;">
 					<!-- hidden template area -->
-					<div id="user_template" class="row uniform" >
-						<div class="3u 12u(3)">
-							<h4>Firebase UID</h4>
-							<input type="text" id="user_uid" readonly />
-						</div>
-						<div class="3u 12u(3)">
-							<h4>User Name</h4>
-							<input type="text" id="user_name" readonly />
-						</div>
-						<div class="3u 12u(3)">
-							<h4>User Email</h4>
-							<input type="text" id="user_email" readonly />
-						</div>
-						<div class="3u 12u(3)">
-							<h4>Permissions</h4>
-							<input type="checkbox" id="user_isAdmin" />
-							<label id="user_isAdmin_label" for="user_isAdmin">Is Administrator</label>
-						</div>
-						<span id="user_message"></span>
-					</div>
-					<hr>
+					<table>
+						<tbody>
+							<td id='template_import_check'>
+								<input type="checkbox" id="import" name="import">
+								<label id="import_label" for="import"></label>
+							</td>
+						</tbody>
+					</table>
 				</div>
-				<div id="found_user_container" class="row uniform">
-					<!-- this area will be totally cleared each time a search for user is performed-->
+				<div class="table-wrapper">
+					<table>
+						<thead>
+							<tr>
+								<th>To Import</th>
+								<th>Category</th>
+								<th>Item Name</th>
+								<th>Item Quality</th>
+								<th>Item Quantity</th>
+								<th>GBP</th>
+								<th>USD</th>
+								<th>AUD</th>
+								<th>Notes</th>
+							</tr>
+						</thead>
+						<tbody id="imported_data_container">
+							
+						</tbody>
+					</table>
+				</div>
+				<div id="imported_data_container" class="row uniform">
+					<!-- this area will be totally cleared each time a file is selected-->
 				</div>
 			</form>
 		</div>

@@ -757,6 +757,7 @@
 
 	input[type="submit"],
 	input[type="reset"],
+	input[type="file"],
 	input[type="button"],
 	.button {
 		-moz-appearance: none;
@@ -791,6 +792,7 @@
 
 		input[type="submit"]:hover,
 		input[type="reset"]:hover,
+		input[type="file"]:hover,
 		input[type="button"]:hover,
 		.button:hover {
 			background-color: rgba(144, 144, 144, 0.075);
@@ -799,6 +801,7 @@
 
 		input[type="submit"]:active,
 		input[type="reset"]:active,
+		input[type="file"]:active,
 		input[type="button"]:active,
 		.button:active {
 			background-color: rgba(144, 144, 144, 0.2);
@@ -806,6 +809,7 @@
 
 		input[type="submit"].icon,
 		input[type="reset"].icon,
+		input[type="file"].icon,
 		input[type="button"].icon,
 		.button.icon {
 			padding-left: 1.35em;
@@ -813,6 +817,7 @@
 
 			input[type="submit"].icon:before,
 			input[type="reset"].icon:before,
+			input[type="file"].icon:before,
 			input[type="button"].icon:before,
 			.button.icon:before {
 				margin-right: 0.5em;
@@ -820,6 +825,7 @@
 
 		input[type="submit"].fit,
 		input[type="reset"].fit,
+		input[type="file"].fit,
 		input[type="button"].fit,
 		.button.fit {
 			display: block;
@@ -829,6 +835,7 @@
 
 		input[type="submit"].small,
 		input[type="reset"].small,
+		input[type="file"].small,
 		input[type="button"].small,
 		.button.small {
 			font-size: 0.8em;
@@ -836,6 +843,7 @@
 
 		input[type="submit"].big,
 		input[type="reset"].big,
+		input[type="file"].big,
 		input[type="button"].big,
 		.button.big {
 			font-size: 1em;
@@ -846,6 +854,7 @@
 
 		input[type="submit"].special,
 		input[type="reset"].special,
+		input[type="file"].special,
 		input[type="button"].special,
 		.button.special {
 			background-color: #e0555a;
@@ -854,6 +863,7 @@
 
 			input[type="submit"].special:hover,
 			input[type="reset"].special:hover,
+			input[type="file"].special:hover,
 			input[type="button"].special:hover,
 			.button.special:hover {
 				background-color: #E46B6F;
@@ -861,14 +871,18 @@
 
 			input[type="submit"].special:active,
 			input[type="reset"].special:active,
+			input[type="file"].special:active,
 			input[type="button"].special:active,
 			.button.special:active {
 				background-color: #DC3F45;
 			}
 
-		input[type="submit"].disabled, input[type="submit"]:disabled,
+		input[type="submit"].disabled, 
+		input[type="submit"]:disabled,
 		input[type="reset"].disabled,
 		input[type="reset"]:disabled,
+		input[type="file"]:disabled,
+		input[type="file"]:disabled,
 		input[type="button"].disabled,
 		input[type="button"]:disabled,
 		.button.disabled,
