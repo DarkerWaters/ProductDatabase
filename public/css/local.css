@@ -58,14 +58,16 @@ html, body {
 }
 
 .sidebar_content {
-  padding-left: 20%;
+  padding-left: 30%;
+  min-height: 750px;
+  align-content: center;
 }
 
 .sidebar1, .sidebar2 {
   background: #949494;
   top:60px;
   bottom:30px;
-  width: 20%;
+  width: 30%;
   position:absolute;
   -moz-box-sizing:border-box;
   -webkit-box-sizing:border-box;

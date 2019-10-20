@@ -21,8 +21,8 @@ service cloud.firestore {
     }
     // there is no invalid change if not changing the private things here
     function noInvalidDataChange() {
-    	return !('isAdmin' in request.resource.data) || false == request.resource.data['isAdmin'];
-             && !('isReader' in request.resource.data) || false == request.resource.data['isReader'];
+    	return (!('isAdmin' in request.resource.data) || false == request.resource.data['isAdmin'])
+             && (!('isReader' in request.resource.data) || false == request.resource.data['isReader']);
           // && notUpdating('forbiddenData');
     }
     // Allow public read access to user data, but only content owners can write
