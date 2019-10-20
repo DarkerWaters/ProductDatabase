@@ -230,7 +230,6 @@ const firebaseData = {
     defaultItem : function(categoryDocId, categoryData, itemName, qualityStr) {
         return firebaseData.autoCompleteData({
             name : itemName ? itemName : "New Item",
-            name_lc : firebaseData.lcRef(itemName),
             category_name : categoryData.name,
             category_ref : firebase.firestore().doc(firebaseData.collectionCategories + '/' + categoryDocId),
             quality : qualityStr,
@@ -264,17 +263,23 @@ const firebaseData = {
 
     autoCompleteData : function(docData) {
         // complete the data on this object, first remove spaces and lower case the name for searching
+        var wordsArray = []
         if (docData.name) {
             docData.name_lc = firebaseData.lcRef(docData.name);
+            // this can be the start of the words
+            wordsArray = [docData.name_lc];
         }
         if (docData.quality) {
             docData.quality_lc = firebaseData.lcRef(docData.quality);
+            // we can include this in our words too
+            wordsArray.push(docData.quality_lc);
         }
         if (docData.supplier) {
             docData.supplier_lc = firebaseData.lcRef(docData.supplier);
+            // we can include this in our words too
+            wordsArray.push(docData.supplier_lc);
         }
         // now concatenate all the entries into an array of words to use
-        var wordsArray = []
         if (docData.name) {
             wordsArray = wordsArray.concat(firebaseData.lcWords(docData.name));
         }
@@ -431,6 +436,18 @@ const firebaseData = {
                 onFailure ? onFailure(error) : console.log("Failed to add the document: ", error);
             });
     },
+
+    searchCollectionForWord : function (collectionName, searchTerm, onSuccess, onFailure) {
+        firebase.firestore().collection(collectionName).where("words", 'array-contains', firebaseData.lcRef(searchTerm)).get()
+            .then(function (querySnapshot) {
+                // this worked
+                onSuccess ?  onSuccess(querySnapshot) : null;
+            })
+            .catch(function(error) {
+                // this didn't work
+                onFailure ? onFailure(error) : console.log("Failed to find any matching documents: ", error);
+            });
+    },
     
     getCategoryByName : function(categoryName, onSuccess, onFailure) {
         // return the correct category
@@ -442,6 +459,19 @@ const firebaseData = {
             .catch(function(error) {
                 // this didn't work
                 onFailure ? onFailure(error) : console.log("Failed to get any matching documents: ", error);
+            });
+    },
+    
+    getCategoryById : function(categoryId, onSuccess, onFailure) {
+        // return the correct category
+        firebase.firestore().collection(this.collectionCategories).doc(categoryId).get()
+            .then(function(doc) {
+                // this worked
+                onSuccess ?  onSuccess(doc) : null;
+            })
+            .catch(function(error) {
+                // this didn't work
+                onFailure ? onFailure(error) : console.log("Failed to get the document: ", error);
             });
     },
     

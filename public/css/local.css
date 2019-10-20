@@ -64,7 +64,7 @@ html, body {
 }
 
 .sidebar1, .sidebar2 {
-  background: #949494;
+  background: #cac1c1;
   top:60px;
   bottom:30px;
   width: 30%;
@@ -79,6 +79,7 @@ html, body {
 .sidebar1 {
   left:0;
 }
+
 
 .sidebar2 {
   right: 0;

@@ -32,6 +32,70 @@ function checkUserState() {
     }
 }
 
+function loadCategoryData(categoryRef, resultContainer) {
+    firebaseData.getCategoryById(categoryRef.id, 
+        function(doc) {
+            // got it
+            resultContainer.innerHTML += JSON.stringify( doc.data(), null, 2 );
+        },
+        function(error) {
+            // failed
+            console.log('category not found: ', error);
+        });
+}
+
+function onSubmitSearch() {
+    // search the selected categories for matches, find all the categories to show from those matched
+    var resultContainer = document.getElementById('search_results_container');
+    var searchTerm = document.getElementById('search').value;
+    resultContainer.innerHTML = "";
+    if (document.getElementById('search_categories').checked) {
+        // search for categories
+        firebaseData.searchCollectionForWord(firebaseData.collectionCategories, searchTerm,
+            function(querySnapshot) {
+                // success, add all to the HTML
+                querySnapshot.forEach(function (doc) {
+                    // show each of these found documents in the HTML
+                    resultContainer.innerHTML += JSON.stringify( doc.data(), null, 2 );
+                });
+            },
+            function (error) {
+                // failed
+                console.log('searching failed: ', error);
+            });
+    }
+    if (document.getElementById('search_items').checked) {
+        // search for categories
+        firebaseData.searchCollectionForWord(firebaseData.collectionItems, searchTerm,
+            function(querySnapshot) {
+                // success, add all to the HTML
+                querySnapshot.forEach(function (doc) {
+                    // show each of the categories of the item in the HTML
+                    loadCategoryData(doc.data().category_ref, resultContainer);
+                });
+            },
+            function (error) {
+                // failed
+                console.log('searching failed: ', error);
+            });
+    }
+    if (document.getElementById('search_quantities').checked) {
+        // search for categories
+        firebaseData.searchCollectionForWord(firebaseData.collectionItems, searchTerm,
+            function(querySnapshot) {
+                // success, add all to the HTML
+                querySnapshot.forEach(function (doc) {
+                    // show each of the categories of the item in the HTML
+                    loadCategoryData(doc.data().category_ref, resultContainer);
+                });
+            },
+            function (error) {
+                // failed
+                console.log('searching failed: ', error);
+            });
+    }
+}
+
 
 document.addEventListener('firebaseuserchange', function() {
     console.log('login changed so ready for input');

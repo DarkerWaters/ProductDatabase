@@ -80,7 +80,21 @@
 					<div style="width: 90%; padding-left: 10%;">
 						<h2>Search</h2>
 						<input type="text" name="search" id="search" value="" style="background-color: aliceblue" placeholder="Search Terms" />
-						
+						<a class="button special" id='search_button' onclick="onSubmitSearch();">Go...</a>
+						<div>
+							<div>
+								<input type="checkbox" id="search_categories" style="background-color: aliceblue" name="search Categories" checked>
+								<label id="search_categories_label" for="search_categories" >Categories</label>
+							</div>
+							<div>
+								<input type="checkbox" id="search_items" style="background-color: aliceblue" name="search Items">
+								<label id="search_items_label" for="search_items" >Items (qualities)</label>
+							</div>
+							<div>
+								<input type="checkbox" id="search_quantities" style="background-color: aliceblue" name="search Quantities">
+								<label id="search_quantities_label" for="search_quantities" >Quantities (prices)</label>
+							</div>
+						</div>
 					</div>
 				</div>
 
@@ -93,7 +107,8 @@
 							<h3 id='not_reader'>You are not a registered reader, request that a registered admin user give you this access right...</h3>
 						</div>
 						<div class="row uniform">
-							
+							<div class="10u 6u(2) 12u$(3)" id="search_results_container">
+							</div>
 						</div>
 					</div>
 				</section>
