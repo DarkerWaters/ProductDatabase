@@ -18,14 +18,31 @@ const db = admin.firestore();
 
 // when a user is created / first sign on, then we want to create the user entry to track their subscriptions etc
 exports.createUserData = functions.auth.user().onCreate((user) => {
+
+    var lcRef = function (str) {
+        if (!str) {
+            return str;
+        }
+        else {
+            // remove all spaces and make it lowercase
+            str = str.toLowerCase().replace(/\s/g,'');
+            if (str.length > 1 && str.slice(-1) === 's') {
+                // remove any trailing 's' characters
+                str = str.slice(0, -1);
+            }
+            return str;
+        }
+    };
+
     // create the skeleton of user data
     var newUserData = {
         // setup the blank user data here
         name: user.displayName,
-        name_lc: user.displayName.toLowerCase(),
+        name_lc: lcRef(user.displayName),
         email: user.email,
-        email_lc: user.email.toLowerCase(),
-        isAdmin: false
+        email_lc: lcRef(user.email),
+        isAdmin: false,
+        isReader: false,
     };
     db.collection('users').doc(user.uid).set(newUserData, {merge: true})
         .then(function() {

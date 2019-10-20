@@ -190,7 +190,13 @@ const firebaseData = {
             return str;
         }
         else {
-            return str.replace(/\s/g,'').toLowerCase();
+            // remove all spaces and make it lowercase
+            str = str.toLowerCase().replace(/\s/g,'');
+            if (str.length > 1 && str.slice(-1) === 's') {
+                // remove any trailing 's' characters
+                str = str.slice(0, -1);
+            }
+            return str;
         }
     },
 
@@ -199,19 +205,25 @@ const firebaseData = {
             return [];
         }
         else {
-            return str.toLowerCase().split(/\s/);
+            // make the words split from the string
+            var words = str.toLowerCase().split(/\s/);
+            for (var i = 0; i < words.length; ++i) {
+                if (words[i].length > 1 && words[i].slice(-1) === 's') {
+                    // there is a trailing 's' remove it
+                    words[i] = words[i].slice(0, -1);
+                }
+            }
+            return words;
         }
     },
 
     defaultCategory : function(categoryName) {
         return firebaseData.autoCompleteData({
             name : categoryName ? categoryName : 'New Category',
-            name_lc : firebaseData.lcRef(categoryName),
-            words : firebaseData.lcWords(categoryName),
-            items : [],
-            image : null,
-            description : 'A newly created category',
-            notes : '',
+            // don't create empty data - to prevent over-writing any existing data on the update
+            //image : 'an image URL',
+            //description : 'A newly created category',
+            //notes : 'Any notes about the category',
         });
     },
 
@@ -222,13 +234,13 @@ const firebaseData = {
             category_name : categoryData.name,
             category_ref : firebase.firestore().doc(firebaseData.collectionCategories + '/' + categoryDocId),
             quality : qualityStr,
-            quantities : [],
-            image : null,
-            description : 'A newly created item',
-            notes : '',
-            physical : '',
-            colours : '',
-            supplier : '',
+            // don't create empty data - to prevent over-writing any existing data on the update
+            //image : 'an image URL',
+            //description : 'A newly created item',
+            //notes : 'Any notes about the item',
+            //physical : 'The physical attributes of the item',
+            //colours : 'The colour options',
+            //supplier : 'The supplier used',
         });
     },
 
@@ -261,7 +273,7 @@ const firebaseData = {
         if (docData.supplier) {
             docData.supplier_lc = firebaseData.lcRef(docData.supplier);
         }
-        // now concatonate all the entries into an array of words to use
+        // now concatenate all the entries into an array of words to use
         var wordsArray = []
         if (docData.name) {
             wordsArray = wordsArray.concat(firebaseData.lcWords(docData.name));
@@ -280,6 +292,11 @@ const firebaseData = {
         }
         // set this data
         docData.words = wordsArray;
+        // add the last update performed
+        var currentUser = this.getUser();
+        docData.last_update = new Date();
+        docData.last_updated_by = currentUser ? currentUser.uid : 'unknown';
+        // return the data
         return docData;
     },
 
@@ -321,10 +338,11 @@ const firebaseData = {
         var newUserData = {
             // setup the blank user data here
             name: user.displayName,
-            name_lc: user.displayName.toLowerCase(),
+            name_lc: lcRef(user.displayName),
             email: user.email,
-            email_lc: user.email.toLowerCase(),
-            isAdmin: false
+            email_lc: lcRef(user.email),
+            isAdmin: false,
+            isReader: false,
         };
         firebase.firestore().collection(firebaseData.collectionUsers).doc(user.uid).set(newUserData, {merge: true})
             .then(function() {
@@ -372,6 +390,10 @@ const firebaseData = {
     
     isUserAdmin : function(firebaseUserData) {
         return firebaseUserData['isAdmin'];
+    },
+    
+    isUserReader : function(firebaseUserData) {
+        return firebaseUserData['isReader'];
     },
 
     addNewItemCategory : function(categoryData, onSuccess, onFailure) {

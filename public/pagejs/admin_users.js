@@ -6,7 +6,7 @@ function searchUserNames() {
     var name = document.getElementById('name').value;
     container.innerHTML = "Searching for users with the name of '" + name + "'.";
 
-    firebase.firestore().collection('users').where("name_lc", "==", name.toLowerCase()).get()
+    firebase.firestore().collection('users').where("name_lc", "==", firebaseData.lcRef(name)).get()
         .then(function(querySnapshot) {
             // this worked
             if (querySnapshot.empty) {
@@ -33,7 +33,7 @@ function searchUserEmails() {
     var email = document.getElementById('email').value;
     container.innerHTML = "Searching for users with the email address of '" + email + "'.";
 
-    firebase.firestore().collection('users').where("email_lc", "==", email.toLowerCase()).get()
+    firebase.firestore().collection('users').where("email_lc", "==", firebaseData.lcRef(email)).get()
         .then(function(querySnapshot) {
             // this worked
             if (querySnapshot.empty) {
@@ -57,7 +57,7 @@ function searchUserEmails() {
 
 function getAllAdministrator() {
     var container = document.getElementById('found_user_container');
-    container.innerHTML = "Searching for add administrators.";
+    container.innerHTML = "Searching for all administrators.";
 
     firebase.firestore().collection('users').where("isAdmin", "==", true).get()
         .then(function(querySnapshot) {
@@ -77,6 +77,32 @@ function getAllAdministrator() {
         .catch(function(error) {
             // this didn't work
             container.innerHTML = "Sorry: failed to find any users with the 'isAdmin' to be true: " + error;
+            return 0;
+        });
+}
+
+function getAllReaders() {
+    var container = document.getElementById('found_user_container');
+    container.innerHTML = "Searching for all readers.";
+
+    firebase.firestore().collection('users').where("isReader", "==", true).get()
+        .then(function(querySnapshot) {
+            // this worked
+            if (querySnapshot.empty) {
+                container.innerHTML = "Sorry: failed to find any 'isReader==true' users";
+            }
+            else {
+                container.innerHTML = "";
+            }
+            querySnapshot.forEach(function (doc) {
+                // for each user, add the user to the container
+                displayUserData(container, doc);
+            });
+            return 1;
+        })
+        .catch(function(error) {
+            // this didn't work
+            container.innerHTML = "Sorry: failed to find any users with the 'isReader' to be true: " + error;
             return 0;
         });
 }
@@ -101,6 +127,28 @@ function onChangeUserAdminState(sourceId) {
         })
         .catch(function(error) {
             console.log("Failed to change the admin flag of the user", error);
+            var messageSpan = document.getElementById(sourceId + '_user_message');
+            if (messageSpan) {
+                messageSpan.innerHTML = "Failed to change: " + error;
+            }
+        });
+}
+
+function onChangeUserReaderState(sourceId) {
+    var user = firebaseData.getUser();
+    var isReaderCheck = document.getElementById(sourceId + '_user_isReader');
+    // the source Id is the UID of the user (the first half anyway), change this data
+    var docRef = '/users/' + sourceId;
+    firebase.firestore().doc(docRef)
+        .update({
+            isReader: (!isReaderCheck.checked)
+        })
+        .then(function() {
+            // this worked
+            isReaderCheck.checked = !isReaderCheck.checked;
+        })
+        .catch(function(error) {
+            console.log("Failed to change the reading flag of the user", error);
             var messageSpan = document.getElementById(sourceId + '_user_message');
             if (messageSpan) {
                 messageSpan.innerHTML = "Failed to change: " + error;
@@ -167,6 +215,7 @@ function displayUserData(container, doc) {
     var uidEdit = userDiv.querySelector('#user_uid');
     var emailEdit = userDiv.querySelector('#user_email');
     var isAdminCheck = userDiv.querySelector('#user_isAdmin');
+    var isReaderCheck = userDiv.querySelector('#user_isReader');
     var messageSpan = userDiv.querySelector('#user_message');
     
     // to avoid duplicates, we want our own IDs here
@@ -174,8 +223,9 @@ function displayUserData(container, doc) {
     uidEdit.id = doc.id + '_' + uidEdit.id;
     emailEdit.id = doc.id + '_' + emailEdit.id;
     isAdminCheck.id = doc.id + '_' + isAdminCheck.id;
+    isReaderCheck.id = doc.id + '_' + isReaderCheck.id;
     messageSpan.id = doc.id + '_' + messageSpan.id;
-    userDiv.querySelector('#user_isAdmin_label').setAttribute("onclick", "onChangeUserAdminState('" + doc.id + "')");
+    userDiv.querySelector('#user_isReader_label').setAttribute("onclick", "onChangeUserReaderState('" + doc.id + "')");
 
     // get the data and populate the fields
     var data = doc.data();
@@ -183,6 +233,7 @@ function displayUserData(container, doc) {
     nameEdit.value = data.name;
     emailEdit.value = data.email;
     isAdminCheck.checked = data.isAdmin == true;
+    isReaderCheck.checked = data.isReader == true;
     messageSpan.innerHTML = "";
 }
 

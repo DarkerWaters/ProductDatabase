@@ -30,7 +30,7 @@
 	<script src="js/jquery.slidertron.min.js"></script>
 
 	<!-- add our page specific javascript here after jQuery as using that in the .csv import js-->
-	<script src="pagejs/admin_data_import.js"></script>
+	<script src="pagejs/admin_data_delete.js"></script>
 	<script src="js/jquery.csv.js"></script>
 
 	<!-- and the template style things here-->
@@ -91,53 +91,33 @@
 	<section id="main" class="wrapper style1">
 		<div class="container">
 			<header class="major">
-				<h1>Import Data</h1>
-				<p>Import data in bulk from .csv files to the <a href="https://console.firebase.google.com/">firestore</a> data store...</p>
+				<h1>Delete Data</h1>
+				<p>Delete data in the <a href="https://console.firebase.google.com/">firestore</a>...</p>
 			</header>
 			<form id='data_form' method="post" action="onPostData()">
 				<header class="major">
-					<h2>Import Pricing List</h2>
-					<input type="file" id="files" name="files[]" value="File" class="alt" style="display: none;"/>
-					<label id="import_files_label" for="files"></label>
-					<a class="button special" id='import_loaded_data' onclick="importLoadedData();" style="display: none;">Import Selected Rows.</a>
+					<h2>Clear Firestore data</h2>
+					<a class="button special" id='delete_all_data' onclick="deleteAllData();" >Delete All Firestore Data Entries.</a>
+					<div>
+						<span>
+							<input type="checkbox" id="delete_categories" name="Delete Categories">
+							<label id="delete_categories_label" for="delete_categories" onclick="onDeleteCategoriesCheck()">Delete Categories</label>
+						</span>
+						<span>
+							<input type="checkbox" id="delete_items" name="Delete Items">
+							<label id="delete_items_label" for="delete_items" onclick="onDeleteItemsCheck()">Delete Items (qualities)</label>
+						</span>
+						<span>
+							<input type="checkbox" id="delete_quantities" name="Delete Quantities">
+							<label id="delete_quantities_label" for="delete_quantities" onclick="onDeleteQuantitiesCheck()">Delete Quantities (prices)</label>
+						</span>
+					</div>
+				</header>
+				<header class="major">
 					<span id="progress_text"></span>
 					<progress id="progress_display" max="1" value="0.0"></progress>
 				</header>
 				<hr>
-				<div style="display: none;">
-					<!-- hidden template area -->
-					<table>
-						<tbody>
-							<td id='template_import_check'>
-								<input type="checkbox" id="import" name="import">
-								<label id="import_label" for="import"></label>
-							</td>
-						</tbody>
-					</table>
-				</div>
-				<div class="table-wrapper">
-					<table>
-						<thead>
-							<tr>
-								<th>To Import</th>
-								<th>Category</th>
-								<th>Item Name</th>
-								<th>Item Quality</th>
-								<th>Item Quantity</th>
-								<th>GBP</th>
-								<th>USD</th>
-								<th>AUD</th>
-								<th>Notes</th>
-							</tr>
-						</thead>
-						<tbody id="imported_data_container">
-							
-						</tbody>
-					</table>
-				</div>
-				<div id="imported_data_container" class="row uniform">
-					<!-- this area will be totally cleared each time a file is selected-->
-				</div>
 			</form>
 		</div>
 	</section>

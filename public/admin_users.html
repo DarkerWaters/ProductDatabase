@@ -63,6 +63,7 @@
 					<ul>
 						<li><a href="admin_users.html">Manage Users</a></li>
 						<li><a href="admin_data_import.html">Import Data</a></li>
+						<li><a href="admin_data_delete.html">Delete Data</a></li>
 					</ul>
 				</li>
 			</ul>
@@ -96,6 +97,7 @@
 					</div>
 					<div class="4u 12u(3)">
 						<a class="button special" id='search_admin_button' onclick="getAllAdministrator();">Find all Administrators</a>
+						<a class="button special" id='search_reader_button' onclick="getAllReaders();">Find all Readers</a>
 						<a class="button special" id='search_all_button' onclick="getAllUsers();">List all Users</a>
 					</div>
 				</div>
@@ -119,6 +121,8 @@
 							<h4>Permissions</h4>
 							<input type="checkbox" id="user_isAdmin" />
 							<label id="user_isAdmin_label" for="user_isAdmin">Is Administrator</label>
+							<input type="checkbox" id="user_isReader" />
+							<label id="user_isReader_label" for="user_isReader">Is Reader</label>
 						</div>
 						<span id="user_message"></span>
 					</div>

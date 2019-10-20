@@ -32,9 +32,9 @@ function ensureUpToDateUserData(user, data) {
         const docRef = firebase.firestore().collection('users').doc(user.uid)
         docRef.update({
             name: user.displayName,
-            name_lc: user.displayName.toLowerCase(),
+            name_lc: firebaseData.lcRef(user.displayName),
             email: user.email,
-            email_lc: user.email.toLowerCase()
+            email_lc: firebaseData.lcRef(user.email)
         }).catch(function(error) {
             console.log("Error updating user information held against them", error);
         });

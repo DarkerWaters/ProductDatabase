@@ -11,6 +11,10 @@ service cloud.firestore {
     function isAdmin() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
+    // is the user a reader of the data
+    function isReader() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isReader == true;
+    }
     // helper to check if they are updating something important
     function notUpdating(field) {
       return !(field in request.resource.data) || (resource.data[field] && resource.data[field] == request.resource.data[field])
@@ -18,6 +22,7 @@ service cloud.firestore {
     // there is no invalid change if not changing the private things here
     function noInvalidDataChange() {
     	return !('isAdmin' in request.resource.data) || false == request.resource.data['isAdmin'];
+             && !('isReader' in request.resource.data) || false == request.resource.data['isReader'];
           // && notUpdating('forbiddenData');
     }
     // Allow public read access to user data, but only content owners can write
@@ -30,17 +35,17 @@ service cloud.firestore {
     // Allow public read access to user data, but only admins can create and edit
     match /item_categories/{categoryId}/{documents=**} {
       allow create, write, delete, update : if isAdmin();
-	    allow read : if request.auth.uid != null;
+	    allow read : if isReader();
     }
     // Allow public read access to user data, but only admins can create and edit
     match /items/{categoryId}/{documents=**} {
       allow create, write, delete, update : if isAdmin();
-	    allow read : if request.auth.uid != null;
+	    allow read : if isReader();
     }
     // Allow public read access to user data, but only admins can create and edit
     match /quantities/{categoryId}/{documents=**} {
       allow create, write, delete, update : if isAdmin();
-	    allow read : if request.auth.uid != null;
+	    allow read : if isReader();
     }
   }
 }

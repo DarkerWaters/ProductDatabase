@@ -238,6 +238,7 @@ function importCategory() {
                         },
                         function(error) {
                             // this failed
+                            console.log("Failed to add a new category ", error);
                             setProgress(("failed to proceed when creating a new category '" + categoryName + "' ", error), 0);
                         });
                 }
@@ -264,6 +265,7 @@ function importCategory() {
             },
             function(error) {
                 // failed to get one
+                console.log("Failed to find the category ", error);
                 setProgress(("failed to proceed when searching for category '" + categoryName + "' ", error), 0);
             });
     }
@@ -294,6 +296,7 @@ function importItem() {
                         },
                         function(error) {
                             // this failed
+                            console.log("Failed to add a new item ", error);
                             setProgress(("failed to proceed when creating a new item '" + itemName + "' ", error), 0);
                         });
                 }
@@ -320,6 +323,7 @@ function importItem() {
             },
             function(error) {
                 // failed to get one
+                console.log("Failed to get the item ", error);
                 setProgress(("failed to proceed when searching for item '" + itemName + "' ", error), 0);
             });
     }
@@ -376,6 +380,7 @@ function importItemQuantity() {
                         },
                         function(error) {
                             // this failed
+                            console.log("Failed to add a new quantity ", error);
                             setProgress(("failed to proceed when creating a new item quantity '" + quantityNumber + "' ", error), 0);
                         });
                 }
@@ -402,31 +407,9 @@ function importItemQuantity() {
             },
             function(error) {
                 // failed to get one
+                console.log("Failed to find a quantity ", error);
                 setProgress(("failed to proceed when searching for item quantity '" + quantityNumber + "' ", error), 0);
             });
-    }
-}
-
-function importDataRow(tableRow) {
-    /* this is what we have
-    <tr>
-        <td>CheckBox</td>
-        <td>Category</td>
-        <td>Item Name</td>
-        <td>Item Quality</td>
-        <td>Item Quantity</td>
-        <td>GBP</td>
-        <td>USD</td>
-        <td>AUD</td>
-        <td>Notes</td>
-    </tr>
-    */
-
-    // the children are the items of data as entered into the row
-    if (tableRow.children.length > 1) {
-        // we are beyond the checkbox to the category - be sure that this exists
-        var categoryDoc = getCategoryDoc(tableRow.children[1].innerHTML);
-        
     }
 }
 
