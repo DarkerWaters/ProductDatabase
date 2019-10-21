@@ -206,13 +206,19 @@ const firebaseData = {
         }
         else {
             // make the words split from the string
-            var words = str.toLowerCase().split(/\s/);
-            for (var i = 0; i < words.length; ++i) {
-                if (words[i].length > 1 && words[i].slice(-1) === 's') {
-                    // there is a trailing 's' remove it
-                    words[i] = words[i].slice(0, -1);
+            var words = [];
+            var toProcess = str.toLowerCase().split(/\s/);
+            for (var i = 0; i < toProcess.length; ++i) {
+                // for each word from the string split, add it to the array
+                var word = toProcess[i];
+                words.push(firebaseData.lcRef(word));
+                // and combine it with all following it
+                for (var j = i + 1; j < toProcess.length; ++j) {
+                    word += toProcess[j];
+                    words.push(firebaseData.lcRef(word));
                 }
             }
+            // return all the words combined into a nice array of options to search for
             return words;
         }
     },
@@ -224,6 +230,7 @@ const firebaseData = {
             //image : 'an image URL',
             //description : 'A newly created category',
             //notes : 'Any notes about the category',
+            //search_terms : 'A list of words for search to find',
         });
     },
 
@@ -240,6 +247,7 @@ const firebaseData = {
             //physical : 'The physical attributes of the item',
             //colours : 'The colour options',
             //supplier : 'The supplier used',
+            //search_terms : 'A list of words for search to find',
         });
     },
 
@@ -258,6 +266,7 @@ const firebaseData = {
             aud : Number(audValue),
             aud_notes : audNotes ? audNotes : '',
             notes : notesValue ? notesValue : '',
+            //search_terms : 'A list of words for search to find',
         });
     },
 
@@ -294,6 +303,9 @@ const firebaseData = {
         }
         if (docData.item_quality) {
             wordsArray = wordsArray.concat(firebaseData.lcWords(docData.item_quality));
+        }
+        if (docData.search_terms) {
+            wordsArray = wordsArray.concat(firebaseData.lcWords(docData.search_terms));
         }
         // set this data
         docData.words = wordsArray;

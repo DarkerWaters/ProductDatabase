@@ -31,6 +31,11 @@ function selectPricingList(event) {
         var csv = event.target.result;
         var data = $.csv.toArrays(csv);
         for (var i = 0; i < data.length; ++i) {
+            // trim all the imported data on this row
+            for (var j = 0; j < data[i].length; ++j) {
+                data[i][j] = data[i][j].trim();
+            }
+            // and display it
             displayImportedRow(container, data[i]);
             updateProgress(i / data.length);
         }
