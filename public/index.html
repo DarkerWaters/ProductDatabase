@@ -83,7 +83,8 @@
 						<h2>Search</h2>
 						<input type="text" name="search" id="search" value="" style="background-color: aliceblue" placeholder="Search Terms" />
 						<a class="button special" id='search_button' onclick="onSubmitSearch();">Go...</a>
-						<div>
+						<!-- hidden the display options as not required-->
+						<div style="display: none;">
 							<div>
 								<input type="checkbox" id="search_categories" style="background-color: aliceblue" name="search Categories" checked>
 								<label id="search_categories_label" for="search_categories" >Categories</label>
@@ -160,6 +161,9 @@
 					<div class="row uniform">
 						<h3 id='not_logged_in'>You are not logged in, please log in to access the data...</h3>
 						<h3 id='not_reader'>You are not a registered reader, request that a registered admin user give you this access right...</h3>
+					</div>
+					<div id="search_results_none_container" >
+						<img id='category_image' class='image fit' src='images/large_image.jpg'/>
 					</div>
 					<div id="search_results_container" >
 					</div>

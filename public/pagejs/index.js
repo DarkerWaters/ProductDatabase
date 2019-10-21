@@ -35,6 +35,7 @@ function checkUserState() {
 var categoriesFound;
 
 function onCategoryFound(categoryContainer, resultContainer, categoryId, categoryData) {
+    document.getElementById('search_results_none_container').style.display = 'none';
     if (categoriesFound.includes(categoryId)) {
         // already added
     }
@@ -174,6 +175,7 @@ function onSubmitSearch() {
     var searchTerm = document.getElementById('search').value;
     // clear all the old data
     resultContainer.innerHTML = "";
+    document.getElementById('search_results_none_container').style.display = null;
     categoryContainer.innerHTML = "";
     categoriesFound = [];
 
