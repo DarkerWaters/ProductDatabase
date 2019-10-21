@@ -108,15 +108,49 @@
 					<p id='template_category_link'><a>Category ID</a></p>
 					<div class="row uniform" id='template_category_result'>
 						<div class="9u 6u(2) 12u$(3)" >
-							<h3 id='category_name'>Category Name</h3>
+							<h1 style='font-size: -webkit-xxx-large; background-color: #e0555a; padding: 10px;' id='category_name'>Category Name</h1>
 							<p id='category_description'>Category Description</p>
 							<p id='category_notes'>Category Notes</p>
 						</div>
 						<div class="3u 6u(2) 12u$(3)" >
-							<img class='image fit' src='images/logo_square.png'/>
+							<img id='category_image' class='image fit' src='images/logo_square.png'/>
 						</div>
-
-						<hr>
+					</div>
+					<div class="row uniform" id='template_item_result'>
+						<div class="9u 6u(2) 12u$(3)" >
+							<h3 id='item_name'>Item Name</h3>
+							<p id='item_quality'>Item Quality</p>
+							<p id='item_notes'>Item Notes</p>
+							<table id='quantity_data_table' >
+								<thead>
+									<tr>
+										<th>Quantity</th>
+										<th colspan='4'>Pricing (Per Unit - Excluding GST/VAT)</th>
+									</tr>
+									<tr>
+										<th></th>
+										<th>GBP (£)</th>
+										<th>USD ($)</th>
+										<th>AUD ($)</th>
+										<th>Notes</th>
+									</tr>
+								</thead>
+								<tbody>
+									
+								</tbody>
+							</table>
+						</div>
+						<div class="3u 6u(2) 12u$(3)" >
+							<img id='item_image' class='image fit' src='images/logo_square.png'/>
+						</div>
+						<div class="3u 6u(2) 12u$(3)" >
+							<a class="button special" id='quantity_button'>Prices...</a>
+						</div>
+						<div class="9u 6u(2) 12u$(3)" >
+							<p id='item_physical'>Physical Attributes</h3>
+							<p id='item_colour'>Colour Options</p>
+							<p id='item_supplier'>Supplier</p>
+						</div>
 					</div>
 				</div>
 

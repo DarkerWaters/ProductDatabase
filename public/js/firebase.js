@@ -259,8 +259,8 @@ const firebaseData = {
             item_name : itemData.name,
             item_quality : itemData.quality,
             quantity : Number(quantityNumber),
-            gpb : Number(gbpValue),
-            gpb_notes : gbpNotes ? gbpNotes : '',
+            gbp : Number(gbpValue),
+            gbp_notes : gbpNotes ? gbpNotes : '',
             usd : Number(usdValue),
             usd_notes : usdNotes ? usdNotes : '',
             aud : Number(audValue),
@@ -503,12 +503,42 @@ const firebaseData = {
             });
     },
     
+    getItemsInCategory : function(categoryDocId, onSuccess, onFailure) {
+        // return the correct items for the category
+        var categoryRef = firebase.firestore().doc(firebaseData.collectionCategories + '/' + categoryDocId);
+        firebase.firestore().collection(this.collectionItems)
+            .where("category_ref", "==", categoryRef).get()
+            .then(function(querySnapshot) {
+                // this worked
+                onSuccess ?  onSuccess(querySnapshot) : null;
+            })
+            .catch(function(error) {
+                // this didn't work
+                onFailure ? onFailure(error) : console.log("Failed to get any matching documents: ", error);
+            });
+    },
+    
     getItemQuantityByNumber : function(itemDocId, quantityNumber, onSuccess, onFailure) {
         // return the correct item quantity
         var itemRef = firebase.firestore().doc(firebaseData.collectionItems + '/' + itemDocId);
         firebase.firestore().collection(this.collectionQuantities)
             .where("quantity", "==", quantityNumber)
             .where("item_ref", "==", itemRef).get()
+            .then(function(querySnapshot) {
+                // this worked
+                onSuccess ?  onSuccess(querySnapshot) : null;
+            })
+            .catch(function(error) {
+                // this didn't work
+                onFailure ? onFailure(error) : console.log("Failed to get any matching documents: ", error);
+            });
+    },
+    
+    getQuantitiesInItem : function(itemDocId, onSuccess, onFailure) {
+        // return the correct quantities for the item
+        var itemRef = firebase.firestore().doc(firebaseData.collectionItems + '/' + itemDocId);
+        firebase.firestore().collection(this.collectionQuantities)
+            .where("item_ref", "==", itemRef).orderBy('quantity').get()
             .then(function(querySnapshot) {
                 // this worked
                 onSuccess ?  onSuccess(querySnapshot) : null;
