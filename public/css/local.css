@@ -58,8 +58,9 @@ html, body {
 }
 
 .sidebar_content {
-  padding-left: 30%;
+  padding-left: 33%;
   min-height: 750px;
+  width: 97%;
   align-content: center;
 }
 

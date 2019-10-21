@@ -22,7 +22,7 @@
 		<script defer src="/__/firebase/init.js"></script>
 
 		<!-- add our page specific javascript here -->
-		<script src="pagejs/index.js"></script>
+		<script src="pagejs/about.js"></script>
 
 		<!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
 		<script src="js/jquery.min.js"></script>
@@ -76,57 +76,54 @@
 		<!-- Page content -->
 			<div class="main content">
 
-				<!-- Side navigation -->
-				<div class="sidebar1">
-					<div style="width: 90%; padding-left: 10%;">
-						<h2>Search</h2>
-						<input type="text" name="search" id="search" value="" style="background-color: aliceblue" placeholder="Search Terms" />
-						<a class="button special" id='search_button' onclick="onSubmitSearch();">Go...</a>
-						<div>
-							<div>
-								<input type="checkbox" id="search_categories" style="background-color: aliceblue" name="search Categories" checked>
-								<label id="search_categories_label" for="search_categories" >Categories</label>
-							</div>
-							<div>
-								<input type="checkbox" id="search_items" style="background-color: aliceblue" name="search Items">
-								<label id="search_items_label" for="search_items" >Items (qualities)</label>
-							</div>
-							<div>
-								<input type="checkbox" id="search_quantities" style="background-color: aliceblue" name="search Quantities">
-								<label id="search_quantities_label" for="search_quantities" >Quantities (prices)</label>
-							</div>
-						</div>
-						<hr>
-						<div id="found_categories">
-							
-						</div>
-					</div>
-				</div>
-
-				<div style="display: none;">
-					<!-- hidden div to contain the templates for adding results-->
-					<p id='template_category_link'><a>Category ID</a></p>
-					<div class="row uniform" id='template_category_result'>
-						<div class="9u 6u(2) 12u$(3)" >
-							<h3 id='category_name'>Category Name</h3>
-							<p id='category_description'>Category Description</p>
-							<p id='category_notes'>Category Notes</p>
-						</div>
-						<div class="3u 6u(2) 12u$(3)" >
-							<img class='image fit' src='images/logo_square.png'/>
-						</div>
-
-						<hr>
-					</div>
-				</div>
-
 				<!-- One -->
-				<section id="one" class="sidebar_content wrapper style2">
-					<div class="row uniform">
-						<h3 id='not_logged_in'>You are not logged in, please log in to access the data...</h3>
-						<h3 id='not_reader'>You are not a registered reader, request that a registered admin user give you this access right...</h3>
-					</div>
-					<div id="search_results_container" >
+				<section id="one" >
+					
+					<div class="container">
+						<div class="row uniform">
+							<header>
+								<h1>About the Disrupt Sports Product Database...</h1>
+								<p>This is a simple in-house, page for employees of Disrupt Sports to find and browse the product catalogue....</p>
+							</header>
+						</div>
+						<div class="row uniform">
+							<header>
+								<h3>Logging on</h3>
+								<p>As this information is for Disrupt Sports employees only, you have to log-on, and an administrator has to grant you access to read.</p>
+							</header>
+							<ul>
+								<li>First log-on with your Google account.</li>
+								<li>Request that you be made a 'reader' by an 'admin' user.</li>
+								<li>Refresh the page.</li>
+							</ul>
+						</div>
+						<div class="row uniform">
+							<header>
+								<h3>Searching</h3>
+								<p>This is the main purpose for this site, you can quickly find the details about the product range here.</p>
+							</header>
+							<ul>
+								<li>Searching operates through the name or quality specified for each item in the database. The result will be shown as a list of categories that contain all the found items.</li>
+								<li>If you want to search for a 'quality' type or item specific things, don't forget to select to search 'items'.</li>
+								<li>Searching does not use boolean operators such as 'and', 'or', 'not'</li>
+								<li>Searching is not case-sensitive</li>
+							</ul>
+						</div>
+						<div class="row uniform">
+							<header>
+								<h3>Enhancements</h3>
+								<p>As a work-in-progress, there are a number of additions that could be made.</p>
+							</header>
+							<ul>
+								<li>Add a 'catalogue' page showing thumbnails of all available products.</li>
+								<li>Add an admin function to delete items in the database that are not in the imported spreadsheet.</li>
+								<li>Add an admin function to download the database to a new spreadsheet to modify and re-import.</li>
+								<li>Add the ability to download the data to an offline document (word or pdf for printing) of available items.</li>
+								<li>An iPad app to browse the data.</li>
+								<li>An Android app to browse the data.</li>
+								<li>Add a customer user role to allow the browsing of the database (without seeing prices?)</li>
+							</ul>
+						</div>
 					</div>
 				</section>
 			</div>
