@@ -118,11 +118,9 @@ function onItemFound(resultContainer, separator, itemId, itemData) {
             table.style.display = null;
         }
     }
-    
     resultContainer.insertBefore(itemDiv, separator);
 
     // we will also want to show all the quantities under this item
-    
     firebaseData.getQuantitiesInItem(itemId,
         function(querySnapshot) {
             // have all the items here, add them all to the category

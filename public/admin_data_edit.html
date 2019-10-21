@@ -1,0 +1,200 @@
+<!DOCTYPE HTML>
+
+<html>
+	<head>
+		<title> </title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+
+		<!-- update the version number as needed -->
+		<script defer src="/__/firebase/7.0.0/firebase-app.js"></script>
+		<!-- include only the Firebase features as you need -->
+		<script defer src="/__/firebase/7.0.0/firebase-auth.js"></script>
+		<script defer src="/__/firebase/7.0.0/firebase-database.js"></script>
+		<script defer src="/__/firebase/7.0.0/firebase-messaging.js"></script>
+		<script defer src="/__/firebase/7.0.0/firebase-storage.js"></script>
+		<script defer src="/__/firebase/7.0.0/firebase-firestore.js"></script>
+		<!-- add the UI for logging in-->
+		<script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+		<link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+		<!-- initialize the SDK after all desired features are loaded -->
+		<script defer src="/__/firebase/init.js"></script>
+
+		<!-- add our page specific javascript here -->
+		<script src="pagejs/admin_data_edit.js"></script>
+
+		<!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.dropotron.min.js"></script>
+		<script src="js/jquery.scrollgress.min.js"></script>
+		<script src="js/jquery.scrolly.min.js"></script>
+		<script src="js/jquery.slidertron.min.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/skel-layers.min.js"></script>
+		<script src="js/firebase.js"></script>
+		<script src="js/init.js"></script>
+		
+		<link rel="stylesheet" type="text/css" href="css/local.css" />
+		<noscript>
+			<link rel="stylesheet" href="css/skel.css" />
+			<link rel="stylesheet" href="css/style.css" />
+			<link rel="stylesheet" href="css/style-xlarge.css" />
+		</noscript>
+		<!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
+		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+	</head>
+	<body class="landing">
+
+		<!-- Header -->
+			<header id="header" class="sidebar_header skel-layers-fixed">
+				<h1><a href="index.html">Disrupt Sports: Product Database</a></h1>
+				<nav id="nav">
+					<ul>
+						<li>
+							<div id="firebaseui-auth-container"></div>
+							<a href="#" id="firebaseSignIn" class="button special">Log In...</a>
+							<p href="#" id="firebaseSignedIn" style="display: none">Logged In...</p>
+						</li>
+						<li><a href="index.html">Home</a></li>
+						<li><a href="about.html">About</a></li>
+						<li class='menu_admin' style="display: none">
+							<a href="">Admin</a>
+							<ul>
+								<li><a href="admin_users.html">Manage Users</a></li>
+								<li><a href="admin_data_import.html">Import Data</a></li>
+								<li><a href="admin_data_delete.html">Delete Data</a></li>
+								<li><a href="admin_data_edit.html">Edit Data</a></li>
+							</ul>
+						</li>
+					</ul>
+					<div id="firebase_login_container" class='floating_fixed' style="display: none;" >
+						<span class="image fit"><img src="images/logo.png" alt="" /></span>
+					</div>
+				</nav>
+			</header>
+
+		<!-- Page content -->
+			<div class="main content">
+
+				<!-- Side navigation -->
+				<div class="sidebar1">
+					<div style="width: 90%; padding-left: 10%;">
+						<h2>Search</h2>
+						<input type="text" name="search" id="search" value="" style="background-color: aliceblue" placeholder="Search Terms" />
+						<a class="button special" id='search_button' onclick="onSubmitSearch();">Get Category Data...</a>
+						<a class="button" id='save_button' onclick="onSave();">Save</a>
+						<hr>
+						<div id="found_categories">
+							
+						</div>
+					</div>
+				</div>
+
+				<div style="display: none;">
+					<!-- hidden div to contain the templates for adding results-->
+					<p id='template_category_link'>Category ID</p>
+					<p id='template_item_link'><a>Item ID</a></p>
+				</div>
+
+				<!-- One -->
+				<section id="one" class="sidebar_content wrapper style2">
+					<div class="row uniform">
+						<div class="9u 6u(2) 12u$(3)" >
+							<h1 style='background-color: #e0555a; padding: 10px;' id='category_name'>
+								<input type="text" id="category_name_edit" placeholder="Category Name" readonly />
+								<label for="category_name_edit">Category Name (read-only)</label>
+							</h1>
+							<input type="text" id="category_description_edit" placeholder="Category Description" />
+							<label for="category_description_edit">Category Description</label>
+							
+							<input type="text" id="category_notes_edit" placeholder="Category Notes" />
+							<label for="category_notes_edit">Category Notes</label>
+						</div>
+						<div class="3u 6u(2) 12u$(3)" >
+							<img id='category_image' class='image fit' src='images/logo_square.png'/>
+							<input type="text" id="category_image_edit" placeholder="URL" />
+							<label for="category_image_edit">Category Image URL</label>
+						</div>
+					</div>
+					<hr>
+					<div class="row uniform">
+						<div class="9u 6u(2) 12u$(3)" >
+							<h3 id='item_name'>
+								<input type="text" id="item_name_edit" placeholder="Item Name" readonly />
+								<label for="item_name_edit">Item Name (read-only)</label>
+							</h3>
+							<input type="text" id="item_quality_edit" placeholder="Item Quality" readonly />
+							<label for="item_quality_edit">Item Quality (read-only)</label>
+					
+							<input type="text" id="item_description_edit" placeholder="Item Description" />
+							<label for="item_description_edit">Item Description</label>
+
+							<input type="text" id="item_notes_edit" placeholder="Item Notes" />
+							<label for="item_notes_edit">Item Notes</label>
+						</div>
+						<div class="3u 6u(2) 12u$(3)" >
+							<img id='item_image' class='image fit' src='images/logo_square.png'/>
+							<input type="text" id="item_image_edit" placeholder="URL" />
+							<label for="item_image_edit">Item Image URL</label>
+						</div>
+						<div class="9u 6u(2) 12u$(3)" >
+							<input type="text" id="item_physical_edit" placeholder="Item Physical" />
+							<label for="item_physical_edit">Item Physical</label>
+							
+							<input type="text" id="item_colours_edit" placeholder="Item Colour Options" />
+							<label for="item_colours_edit">Item Colour Options</label>
+
+							<input type="text" id="item_supplier_edit" placeholder="Item Supplier" />
+							<label for="item_supplier_edit">Item Supplier</label>
+						</div>
+					</div>
+					<div class="row uniform">
+						<div class="9u 6u(2) 12u$(3)" >
+							<table id='quantity_data_table' >
+								<thead>
+									<tr>
+										<th>Quantity</th>
+										<th colspan='4'>Pricing (Per Unit - Excluding GST/VAT)</th>
+									</tr>
+									<tr>
+										<th></th>
+										<th>GBP (£)</th>
+										<th>USD ($)</th>
+										<th>AUD ($)</th>
+										<th>Notes</th>
+									</tr>
+								</thead>
+								<tbody>
+									
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</section>
+			</div>
+			
+		<!-- Footer -->
+			<footer id="footer">
+				<ul class="icons">
+					<li><a href="https://twitter.com/https://twitter.com/disrupt_sports" class="icon fa-twitter"><span class="label">Twitter</span></a>
+					</li>
+					<li><a href="https://www.facebook.com/DisruptSports/" class="icon fa-facebook"><span
+								class="label">Facebook</span></a></li>
+					<li><a href="https://www.instagram.com/disruptsports/" class="icon fa-instagram"><span
+								class="label">Instagram</span></a></li>
+					<li><a href="https://www.youtube.com/channel/UCnKjjbZzDrfWV9JV_hrnKNg" class="icon fa-youtube"><span
+								class="label">YouTube</span></a></li>
+					<li><a href="https://www.disruptsports.com/contact-us/" class="icon fa-envelope"><span class="label">Envelope</span></a></li>
+				</ul>
+				<ul class="menu">					
+					<li><a href="https://www.disruptsports.com/terms-and-conditions/">Terms of Use</a></li>
+					<li><a href="https://www.disruptsports.com/privacy-policy/">Privacy</a></li>
+					<li><a href="https://www.disruptsports.com/contact-us/">Contact</a></li>
+				</ul>
+				<span class="copyright">
+					&copy; Copyright. All rights reserved. Design by <a href="https://www.darkerwaters.co.uk">Darker Waters LTD</a>
+				</span>
+			</footer>
+	</body>
+</html>
