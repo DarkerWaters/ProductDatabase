@@ -93,6 +93,7 @@ function onItemFound(resultContainer, separator, itemId, itemData) {
     // do the data for this
     setContainerData(itemDiv, 'item', 'name', itemId, itemData);
     setContainerData(itemDiv, 'item', 'quality', itemId, itemData);
+    setContainerData(itemDiv, 'item', 'description', itemId, itemData);
     setContainerData(itemDiv, 'item', 'notes', itemId, itemData);
 
     // and do the image
@@ -103,7 +104,7 @@ function onItemFound(resultContainer, separator, itemId, itemData) {
     }
 
     setContainerData(itemDiv, 'item', 'physical', itemId, itemData);
-    setContainerData(itemDiv, 'item', 'colour', itemId, itemData);
+    setContainerData(itemDiv, 'item', 'colours', itemId, itemData);
     setContainerData(itemDiv, 'item', 'supplier', itemId, itemData);
 
     // setup the table correctly
