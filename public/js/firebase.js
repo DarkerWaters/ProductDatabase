@@ -192,6 +192,8 @@ const firebaseData = {
         else {
             // remove all spaces and make it lowercase
             str = str.toLowerCase().replace(/\s/g,'');
+            // and get rid of anything too weird
+            str = str.replace(/\W/g, '');
             if (str.length > 1 && str.slice(-1) === 's') {
                 // remove any trailing 's' characters
                 str = str.slice(0, -1);
