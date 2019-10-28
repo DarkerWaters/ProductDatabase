@@ -52,9 +52,8 @@
 				<nav id="nav">
 					<ul>
 						<li>
-							<div id="firebaseui-auth-container"></div>
-							<a href="#" id="firebaseSignIn" class="button special">Log In...</a>
-							<p href="#" id="firebaseSignedIn" style="display: none">Logged In...</p>
+							<a href="javascript:signinFirebase();" id="firebaseSignIn" class="button special">Log In...</a>
+							<p href="profile.html" id="firebaseSignedIn" style="display: none">Profile</p>
 						</li>
 						<li><a href="index.html">Home</a></li>
 						<li><a href="about.html">About</a></li>
@@ -64,13 +63,10 @@
 								<li><a href="admin_users.html">Manage Users</a></li>
 								<li><a href="admin_data_import.html">Import Data</a></li>
 								<li><a href="admin_data_delete.html">Delete Data</a></li>
-						<li><a href="admin_data_edit.html">Edit Data</a></li>
+								<li><a href="admin_data_edit.html">Edit Data</a></li>
 							</ul>
 						</li>
 					</ul>
-					<div id="firebase_login_container" class='floating_fixed' style="display: none;" >
-						<span class="image fit"><img src="images/logo.png" alt="" /></span>
-					</div>
 				</nav>
 			</header>
 
@@ -162,6 +158,10 @@
 					<div class="row uniform">
 						<h3 id='not_logged_in'>You are not logged in, please log in to access the data...</h3>
 						<h3 id='not_reader'>You are not a registered reader, request that a registered admin user give you this access right...</h3>
+					</div>
+					<div class="row uniform">
+						<div id="firebase_login_container" style="padding: 20px;" style="display: none;"> </div>
+						<div id="firebaseui-auth-container" style="display: none;"></div>
 					</div>
 					<div id="search_results_none_container" >
 						<img id='category_image' class='image fit' src='images/large_image.jpg'/>
