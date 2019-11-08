@@ -248,6 +248,21 @@ const firebaseData = {
             return str;
         }
     },
+    
+    lcOldRef : function (str) {
+        if (!str) {
+            return str;
+        }
+        else {
+            // remove all spaces and make it lowercase
+            str = str.toLowerCase().replace(/\s/g,'');
+            if (str.length > 1 && str.slice(-1) === 's') {
+                // remove any trailing 's' characters
+                str = str.slice(0, -1);
+            }
+            return str;
+        }
+    },
 
     lcWords : function(str) {
         if (!str) {

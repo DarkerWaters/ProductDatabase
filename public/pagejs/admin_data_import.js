@@ -4,6 +4,164 @@
 var rowCount;
 var firstValid;
 
+function fixLcRefsInLoadedData() {
+    // get all the categories
+    firebase.firestore().collection(firebaseData.collectionCategories).get()
+        .then(function(querySnapshot) {
+            // this worked
+            querySnapshot.forEach(function (doc) {
+                var oldDocData = doc.data();
+                var oldRef = firebaseData.lcOldRef(oldDocData.name);
+                var newRef = firebaseData.lcRef(oldDocData.name);
+                if (oldDocData.name_lc === oldRef && oldRef !== newRef) {
+                    // this is the old ref and it is different
+                    var oldDocId = doc.id;
+                    firebase.firestore().collection(firebaseData.collectionCategories).where("name_lc", "==", newRef).get()
+                        .then(function(querySnapshot) {
+                            // this worked
+                            querySnapshot.forEach(function (newDoc) {
+                                // oldDocData is the old doc and new is the new doc
+                                var newDocData = newDoc.data();
+                                oldDocData.name_lc = newRef;
+                                firebase.firestore().collection(firebaseData.collectionCategories).doc(newDoc.id).update(oldDocData)
+                                    .then(function() {
+                                        // this worked
+                                        firebase.firestore().collection(firebaseData.collectionCategories).doc(oldDocId).delete();
+                                    })
+                                    .catch(function(error) {
+                                        // this failed
+                                        console.log("Failed to update the document: ", error);
+                                    });
+                            });
+                        })
+                        .catch(function(error) {
+                            // this didn't work
+                            console.log("Failed to get any matching documents: ", error);
+                        });
+
+                }
+                
+            });
+        })
+        .catch(function(error) {
+            // this didn't work
+            console.log("Failed to get any matching documents: ", error);
+        });
+
+    // get all the items
+    firebase.firestore().collection(firebaseData.collectionItems).get()
+        .then(function(querySnapshot) {
+            // this worked
+            querySnapshot.forEach(function (doc) {
+                var oldDocData = doc.data();
+                var oldRef = firebaseData.lcOldRef(oldDocData.name);
+                var newRef = firebaseData.lcRef(oldDocData.name);
+                var oldQuality = firebaseData.lcOldRef(oldDocData.quality);
+                var newQuality = firebaseData.lcRef(oldDocData.quality);
+                if ((oldDocData.name_lc === oldRef && oldRef !== newRef) ||
+                    (oldDocData.quality_lc === oldQuality && oldQuality !== newQuality)) {
+                    // this is the old ref and it is different
+                    var oldDocId = doc.id;
+                    firebase.firestore().collection(firebaseData.collectionItems).where("name_lc", "==", newRef).get()
+                        .then(function(querySnapshot) {
+                            // this worked
+                            querySnapshot.forEach(function (newDoc) {
+                                var newDocData = newDoc.data();
+                                var newDocId = newDoc.id;
+                                if (newDocData.name_lc === newRef && newDocData.quality_lc === newQuality) {
+                                    // oldDocData is the old doc and new is the new doc
+                                    oldDocData.name_lc = newRef;
+                                    oldDocData.quality_lc = newQuality;
+                                    firebase.firestore().collection(firebaseData.collectionItems).doc(newDocId).update(oldDocData)
+                                        .then(function() {
+                                            // this worked
+                                            firebase.firestore().collection(firebaseData.collectionItems).doc(oldDocId).delete();
+                                        })
+                                        .catch(function(error) {
+                                            // this failed
+                                            console.log("Failed to update the document: ", error);
+                                        });
+                                    }
+                            });
+                        })
+                        .catch(function(error) {
+                            // this didn't work
+                            console.log("Failed to get any matching documents: ", error);
+                        });
+
+                }
+            });
+        })
+        .catch(function(error) {
+            // this didn't work
+            console.log("Failed to get any matching documents: ", error);
+        });
+
+    // get all the items
+    firebase.firestore().collection(firebaseData.collectionItems).get()
+        .then(function(querySnapshot) {
+            // this worked
+            querySnapshot.forEach(function (doc) {
+                var docId = doc.id;
+                var docData = doc.data();
+                firebase.firestore().doc(docData.category_ref.path).get()
+                    .then(function(querySnapshot) {
+                        // got the data
+                        if (querySnapshot.empty || !querySnapshot.exists) {
+                            // invalid, delete it
+                            firebase.firestore().collection(firebaseData.collectionItems).doc(docId).delete();
+                        }
+                    })
+                    .catch(function(error) {
+                        // this didn't work
+                        console.log("Failed to get any matching documents: ", error);
+                    });
+            });
+        })
+        .catch(function(error) {
+            // this didn't work
+            console.log("Failed to get any matching documents: ", error);
+        });
+
+    // get all the quantities
+    firebase.firestore().collection(firebaseData.collectionQuantities).get()
+        .then(function(querySnapshot) {
+            // this worked
+            querySnapshot.forEach(function (doc) {
+                var docId = doc.id;
+                var docData = doc.data();
+                firebase.firestore().doc(docData.item_ref.path).get()
+                    .then(function(querySnapshot) {
+                        // got the data
+                        if (querySnapshot.empty || !querySnapshot.exists) {
+                            // invalid, delete it
+                            firebase.firestore().collection(firebaseData.collectionQuantities).doc(docId).delete();
+                        }
+                    })
+                    .catch(function(error) {
+                        // this didn't work
+                        console.log("Failed to get any matching documents: ", error);
+                    });
+                firebase.firestore().doc(docData.category_ref.path).get()
+                    .then(function(querySnapshot) {
+                        // got the data
+                        if (querySnapshot.empty || !querySnapshot.exists) {
+                            // invalid, delete it
+                            firebase.firestore().collection(firebaseData.collectionQuantities).doc(docId).delete();
+                        }
+                    })
+                    .catch(function(error) {
+                        // this didn't work
+                        console.log("Failed to get any matching documents: ", error);
+                    });
+            });
+        })
+        .catch(function(error) {
+            // this didn't work
+            console.log("Failed to get any matching documents: ", error);
+        });
+}
+
 function selectPricingList(event) {
     setProgress('picking file', 0);
     var files = event.target.files;
@@ -222,6 +380,9 @@ function importNextDataRow() {
 function importCategory() {
     // we want to import our category here, have we already?
     var categoryName = importRow.children[1].innerHTML;
+    if (categoryName.toLowerCase() === 'hockey pucks') {
+        console.log('found puck');
+    }
     if (lastCategoryData && lastCategoryData.name_lc === firebaseData.lcRef(categoryName)) {
         // we don't need to get the category - we already have it loaded
         importItem();
@@ -232,6 +393,9 @@ function importCategory() {
             function(querySnapshot) {
                 // have the result, create the data we want
                 lastCategoryData = firebaseData.defaultCategory(categoryName);
+                // this makes the item and the quantity items null - not for this category
+                lastItemData = null;
+                lastQuantityData = null;
                 if (querySnapshot.empty) {
                     // there are none, create a new one
                     firebaseData.addNewItemCategory(lastCategoryData,
@@ -290,6 +454,8 @@ function importItem() {
             function(querySnapshot) {
                 // have the result, create the data we want
                 lastItemData = firebaseData.defaultItem(lastCategoryId, lastCategoryData, itemName, quality);
+                // this makes the quantity data below this invalid
+                lastQuantityData = null;
                 if (querySnapshot.empty) {
                     // there are none, create a new one
                     firebaseData.addNewItem(lastItemData,

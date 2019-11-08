@@ -89,6 +89,7 @@
 					<h2>Import Pricing List</h2>
 					<input type="file" id="files" name="files[]" value="File" class="alt" style="display: none;"/>
 					<label id="import_files_label" for="files"></label>
+					<a class="button special" id='fix_data' onclick="fixLcRefsInLoadedData();" style="display: none;">Fix LC Refs.</a>
 					<a class="button special" id='import_loaded_data' onclick="importLoadedData();" style="display: none;">Import Selected Rows.</a>
 					<span id="progress_text"></span>
 					<progress id="progress_display" max="1" value="0.0"></progress>
