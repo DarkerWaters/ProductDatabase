@@ -87,6 +87,16 @@ function onCategoryFound(categoryContainer, resultContainer, categoryId, categor
     }
 }
 
+function updateQuoteButton(itemId, quoteButton, gpbCheck, usdCheck, audCheck) {
+    quoteButton.href = "/quote.html?itemId=" + itemId + "&gbp=" + gpbCheck.checked + "&usd=" + usdCheck.checked + "&aud=" + audCheck.checked;
+    if (gpbCheck.checked || usdCheck.checked || audCheck.checked) {
+        quoteButton.classList.remove('disabled');
+    }
+    else {
+        quoteButton.classList.add('disabled');
+    }
+}
+
 function onItemFound(resultContainer, separator, itemId, itemData) {
     var itemDiv = document.getElementById('template_item_result').cloneNode(true);
     itemDiv.id = itemId;
@@ -96,7 +106,33 @@ function onItemFound(resultContainer, separator, itemId, itemData) {
     setContainerData(itemDiv, 'item', 'description', itemId, itemData);
     setContainerData(itemDiv, 'item', 'notes', itemId, itemData);
     setContainerData(itemDiv, 'item', 'url', itemId, itemData);
+    // set the container data on the checkboxes - won't fill them but will set their IDs properly
+    var gpbCheck = setContainerData(itemDiv, 'item', 'quote_gbp', itemId, null);
+    var usdCheck = setContainerData(itemDiv, 'item', 'quote_usd', itemId, null);
+    var audCheck = setContainerData(itemDiv, 'item', 'quote_aud', itemId, null);
 
+    // listen to the check boxes
+    var gbpLabel = setContainerData(itemDiv, 'item', 'quote_gbp_label', itemId, null);
+    var usdLabel = setContainerData(itemDiv, 'item', 'quote_usd_label', itemId, null);
+    var audLabel = setContainerData(itemDiv, 'item', 'quote_aud_label', itemId, null);
+    var quoteButton = setContainerData(itemDiv, 'item', 'quote_button', itemId, null);
+
+    // we need to listen to clicking to the labels to set the checkboxes they represent
+    gbpLabel.onclick = function() {
+        gpbCheck.checked = !gpbCheck.checked;
+        updateQuoteButton(itemId, quoteButton, gpbCheck, usdCheck, audCheck);
+    };
+    usdLabel.onclick = function() {
+        usdCheck.checked = !usdCheck.checked;
+        updateQuoteButton(itemId, quoteButton, gpbCheck, usdCheck, audCheck);
+    };
+    audLabel.onclick = function() {
+        audCheck.checked = !audCheck.checked;
+        updateQuoteButton(itemId, quoteButton, gpbCheck, usdCheck, audCheck);
+    };
+    // do the initial button setup straight away
+    updateQuoteButton(itemId, quoteButton, gpbCheck, usdCheck, audCheck);
+    
     // and do the image
     var image = itemDiv.querySelector('#item_image');
     image.id = "item_image_" + itemId;
@@ -146,17 +182,25 @@ function onItemFound(resultContainer, separator, itemId, itemData) {
         });
 }
 
-function onQuantityFound(table, quantityId, quantityData) {
+function onQuantityFound(table, quantityId, quantityData, isHideGbp, isHideUsd, isHideAud, isHideNotes) {
     // add a row to the table
     var newRow = document.createElement('tr');
     newRow.id = quantityId;
     var tBody = table.getElementsByTagName('tbody')[0];
     // add the data to this row
     addTableCell(newRow, quantityData.quantity);
-    addTableCell(newRow, quantityData.gbp_notes ? quantityData.gbp_notes : '£' + quantityData.gbp);
-    addTableCell(newRow, quantityData.usd_notes ? quantityData.usd_notes : '$' + quantityData.usd);
-    addTableCell(newRow, quantityData.aud_notes ? quantityData.aud_notes : 'AUD ' + quantityData.aud);
-    addTableCell(newRow, quantityData.notes ? quantityData.notes : '');
+    if (!isHideGbp) {
+        addTableCell(newRow, quantityData.gbp_notes ? quantityData.gbp_notes : '£' + quantityData.gbp);
+    }
+    if (!isHideUsd) {
+        addTableCell(newRow, quantityData.usd_notes ? quantityData.usd_notes : '$' + quantityData.usd);
+    }
+    if (!isHideAud) {
+        addTableCell(newRow, quantityData.aud_notes ? quantityData.aud_notes : 'AUD ' + quantityData.aud);
+    }
+    if (!isHideNotes) {
+        addTableCell(newRow, quantityData.notes ? quantityData.notes : '');
+    }
     // and put the row into the table
     tBody.appendChild(newRow);
 }
@@ -170,13 +214,16 @@ function addTableCell(row, cellData) {
 function setContainerData(parent, level, variable, id, data) {
     var divElement = parent.querySelector('#' + level + "_" + variable);
     divElement.id = level + '_' + variable + '_' + id;
-    if (data[variable]) {
-        divElement.innerHTML = data[variable];
+    if (data) {
+        // there is data, do something with it
+        if (data[variable]) {
+            divElement.innerHTML = data[variable];
+        }
+        else {
+            divElement.innerHTML = '';
+        }
     }
-    else {
-        divElement.innerHTML = '';
-    }
-    
+    return divElement;
 }
 
 function onSubmitSearch() {
@@ -255,10 +302,12 @@ document.addEventListener('firebaseuserchange', function() {
     console.log('login changed so ready for input');
 
     const node = document.getElementById("search");
-    node.addEventListener("keyup", function(event) {
-        if (event.key === "Enter") {
-            onSubmitSearch();
-        }
-    });
-    checkUserState();			
+    if (node) {
+        node.addEventListener("keyup", function(event) {
+            if (event.key === "Enter") {
+                onSubmitSearch();
+            }
+        });
+        checkUserState();
+    }
 });

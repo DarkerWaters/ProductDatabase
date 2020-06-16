@@ -99,13 +99,13 @@ function initialiseFirebaseLoginButton() {
     if (signIn && signedIn) {
         signIn.style.display = 'none';
         signedIn.style.display = 'none';
-        firebase.auth().onAuthStateChanged(function(user) {
-            // update the display of the user here
-            updateFirebaseUserDisplay(user);
-            // dispatch this change to the document
-            document.dispatchEvent(new Event('firebaseuserchange'));
-        });
     }
+    firebase.auth().onAuthStateChanged(function(user) {
+        // update the display of the user here
+        updateFirebaseUserDisplay(user);
+        // dispatch this change to the document
+        document.dispatchEvent(new Event('firebaseuserchange'));
+    });
 };
 
 function showFirebaseLoginButtons(user, userData) {
