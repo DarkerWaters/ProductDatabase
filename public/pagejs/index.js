@@ -13,6 +13,8 @@ function checkUserState() {
                 if (firebaseData.isUserReader(firebaseUserData)) {
                     // we are a reader
                     document.getElementById('not_reader').style.display = 'none';
+                    // do the big first query
+                    onSubmitSearch();
                 }
                 else {
                     // not a reader
@@ -95,12 +97,22 @@ function onItemFound(resultContainer, separator, itemId, itemData) {
     setContainerData(itemDiv, 'item', 'quality', itemId, itemData);
     setContainerData(itemDiv, 'item', 'description', itemId, itemData);
     setContainerData(itemDiv, 'item', 'notes', itemId, itemData);
+    setContainerData(itemDiv, 'item', 'url', itemId, itemData);
 
     // and do the image
     var image = itemDiv.querySelector('#item_image');
     image.id = "item_image_" + itemId;
     if (itemData.image) {
         image.src = itemData.image;
+    }
+    // and the link
+    var linkTitle = itemDiv.querySelector('#item_url_' + itemId)
+    if (itemData.url && linkTitle) {
+        linkTitle.href = itemData.url;
+        linkTitle.style.display = null;
+    }
+    else if (linkTitle) {
+        linkTitle.style.display = "none";
     }
 
     setContainerData(itemDiv, 'item', 'physical', itemId, itemData);

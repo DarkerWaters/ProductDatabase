@@ -64,6 +64,23 @@ html, body {
   align-content: center;
 }
 
+.sidebar3 {
+  background: #cac1c1;
+  top:60px;
+  bottom:30px;
+  width: 30%;
+  position:fixed;
+  padding-left: 1%;
+  padding-right: 1%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  -moz-box-sizing:border-box;
+  -webkit-box-sizing:border-box;
+  -o-box-sizing:border-box;
+  -ms-box-sizing:border-box;
+  box-sizing:border-box;
+}
+
 .sidebar1, .sidebar2 {
   background: #cac1c1;
   top:60px;
@@ -103,4 +120,48 @@ html, body {
 .sidebar_footer {
   width: 100%;
   background: whitesmoke;
+}
+
+.cat_id {
+
+}
+
+.cat_desc {
+  background-color: #cac1c1;
+  color: #545454;
+  padding: 0.2em;
+}
+
+.cat_notes {
+
+}
+
+.cat_name {
+  font-size: -webkit-xxx-large;
+  background-color: #e0555a;
+  padding: 1em;
+}
+
+.item_name {
+  background-color: antiquewhite;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+.item_qual {
+  background-color: antiquewhite;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+.item_desc {
+  
+}
+
+.item_notes {
+  
+}
+
+.item_deets {
+  
 }

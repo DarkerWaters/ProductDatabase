@@ -121,6 +121,7 @@ function populateItemData(itemId, itemData) {
     fillEdit('item', 'description', itemData.description);
     fillEdit('item', 'notes', itemData.notes);
     fillEdit('item', 'image', itemData.image);
+    fillEdit('item', 'url', itemData.url);
 
     // and do the image
     var image = document.getElementById('item_image');
@@ -194,6 +195,7 @@ function onSave() {
         itemDataSelected.description = getEditedData('item', 'description');
         itemDataSelected.notes = getEditedData('item', 'notes');
         itemDataSelected.image = getEditedData('item', 'image');
+        itemDataSelected.url = getEditedData('item', 'url');
         itemDataSelected.physical = getEditedData('item', 'physical');
         itemDataSelected.colours = getEditedData('item', 'colours');
         itemDataSelected.supplier = getEditedData('item', 'supplier');

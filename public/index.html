@@ -74,8 +74,8 @@
 			<div class="main content">
 
 				<!-- Side navigation -->
-				<div class="sidebar1">
-					<div style="width: 90%; padding-left: 10%;">
+				<div class="sidebar3">
+					<div>
 						<h2>Search</h2>
 						<input type="text" name="search" id="search" value="" style="background-color: aliceblue" placeholder="Search Terms" />
 						<a class="button special" id='search_button' onclick="onSubmitSearch();">Go...</a>
@@ -103,12 +103,12 @@
 
 				<div style="display: none;">
 					<!-- hidden div to contain the templates for adding results-->
-					<p id='template_category_link'><a>Category ID</a></p>
+					<p id='template_category_link'><a class="cat_id">Category ID</a></p>
 					<div class="row uniform" id='template_category_result'>
 						<div class="9u 6u(2) 12u$(3)" >
-							<h1 style='font-size: -webkit-xxx-large; background-color: #e0555a; padding: 10px;' id='category_name'>Category Name</h1>
-							<p id='category_description'>Category Description</p>
-							<p id='category_notes'>Category Notes</p>
+							<h1 class="cat_name" id='category_name'>Category Name</h1>
+							<p class="cat_desc" id='category_description'>Category Description</p>
+							<p class="cat_notes" id='category_notes'>Category Notes</p>
 						</div>
 						<div class="3u 6u(2) 12u$(3)" >
 							<img id='category_image' class='image fit' src='images/logo_square.png'/>
@@ -116,10 +116,18 @@
 					</div>
 					<div class="row uniform" id='template_item_result'>
 						<div class="9u 6u(2) 12u$(3)" >
-							<h3 id='item_name'>Item Name</h3>
-							<p id='item_quality'>Item Quality</p>
-							<p id='item_description'>Item Description</p>
-							<p id='item_notes'>Item Notes</p>
+							<div class="row uniform" id='template_item_result'>
+								<div class="9u 6u(2) 12u$(3)" >
+									<h3 class="item_name" id='item_name'>Item Name</h3>
+									<p class="item_qual" id='item_quality'>Item Quality</p>
+								</div>
+								<div class="3u 6u(2) 12u$(3)" >
+									<a class="button special" id='quantity_button'>Prices...</a>
+									<a id='item_url' target="_blank">External Link</a>
+								</div>
+							</div>
+							<p class="item_desc" id='item_description'>Item Description</p>
+							<p class="item_notes" id='item_notes'>Item Notes</p>
 							<table id='quantity_data_table' style="display: none;">
 								<thead>
 									<tr>
@@ -142,13 +150,11 @@
 						<div class="3u 6u(2) 12u$(3)" >
 							<img id='item_image' class='image fit' src='images/logo_square.png'/>
 						</div>
-						<div class="3u 6u(2) 12u$(3)" >
-							<a class="button special" id='quantity_button'>Prices...</a>
-						</div>
+						
 						<div class="9u 6u(2) 12u$(3)" >
-							<p id='item_physical'>Physical Attributes</h3>
-							<p id='item_colours'>Colour Options</p>
-							<p id='item_supplier'>Supplier</p>
+							<p class="item_deets" id='item_physical'>Physical Attributes</h3>
+							<p class="item_deets" id='item_colours'>Colour Options</p>
+							<p class="item_deets" id='item_supplier'>Supplier</p>
 						</div>
 					</div>
 				</div>

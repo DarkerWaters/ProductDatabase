@@ -64,7 +64,7 @@ function signinFirebase() {
             }*/
             //,firebase.auth.FacebookAuthProvider.PROVIDER_ID
             //,firebase.auth.GithubAuthProvider.PROVIDER_ID
-            //,firebase.auth.EmailAuthProvider.PROVIDER_ID
+            ,firebase.auth.EmailAuthProvider.PROVIDER_ID
         ],
         // tosUrl and privacyPolicyUrl accept either url string or a callback
         // function.
@@ -306,6 +306,7 @@ const firebaseData = {
             quality : qualityStr,
             // don't create empty data - to prevent over-writing any existing data on the update
             //image : 'an image URL',
+            //url: 'an external URL',
             //description : 'A newly created item',
             //notes : 'Any notes about the item',
             //physical : 'The physical attributes of the item',
@@ -514,15 +515,29 @@ const firebaseData = {
     },
 
     searchCollectionForWord : function (collectionName, searchTerm, onSuccess, onFailure) {
-        firebase.firestore().collection(collectionName).where("words", 'array-contains', firebaseData.lcRef(searchTerm)).get()
-            .then(function (querySnapshot) {
-                // this worked
-                onSuccess ?  onSuccess(querySnapshot) : null;
-            })
-            .catch(function(error) {
-                // this didn't work
-                onFailure ? onFailure(error) : console.log("Failed to find any matching documents: ", error);
-            });
+        if (!searchTerm || searchTerm === "") {
+            // there is no term - get everything
+            firebase.firestore().collection(collectionName).get()
+                .then(function (querySnapshot) {
+                    // this worked
+                    onSuccess ?  onSuccess(querySnapshot) : null;
+                })
+                .catch(function(error) {
+                    // this didn't work
+                    onFailure ? onFailure(error) : console.log("Failed to find any matching documents: ", error);
+                });
+        }
+        else {
+            firebase.firestore().collection(collectionName).where("words", 'array-contains', firebaseData.lcRef(searchTerm)).get()
+                .then(function (querySnapshot) {
+                    // this worked
+                    onSuccess ?  onSuccess(querySnapshot) : null;
+                })
+                .catch(function(error) {
+                    // this didn't work
+                    onFailure ? onFailure(error) : console.log("Failed to find any matching documents: ", error);
+                });
+            }
     },
     
     getCategoryByName : function(categoryName, onSuccess, onFailure) {

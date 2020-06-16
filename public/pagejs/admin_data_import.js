@@ -405,7 +405,7 @@ function importCategory() {
                             // and import the item from the row of data
                             importItem();
                         },
-                        function(error) {
+                        function(error) {   
                             // this failed
                             console.log("Failed to add a new category ", error);
                             setProgress(("failed to proceed when creating a new category '" + categoryName + "' ", error), 0);
