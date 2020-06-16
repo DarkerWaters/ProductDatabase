@@ -13,8 +13,6 @@ function checkUserState() {
                 if (firebaseData.isUserReader(firebaseUserData)) {
                     // we are a reader
                     document.getElementById('not_reader').style.display = 'none';
-                    // do the big first query
-                    onSubmitSearch();
                 }
                 else {
                     // not a reader
