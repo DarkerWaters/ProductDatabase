@@ -56,20 +56,41 @@ document.addEventListener('firebaseuserchange', function() {
         header.parentElement.removeChild(header);
     }
 
-    // we will also want to show all the quantities under this item
-    firebaseData.getQuantitiesInItem(itemId,
-        function(querySnapshot) {
-            // have all the items here, add them all to the category
-            var noItems = querySnapshot.size;
-            var itemCount = 0;
-            querySnapshot.forEach(function(doc) {
-                // for each doc (item) add the data
-                onQuantityFound(table, doc.id, doc.data(), !isGbp, !isUsd, !isAud, !isNotes);
-                if (++itemCount === noItems) {
-                    // this is the last item loaded, print this out then
-                    window.print();
-                }
-            })
+    var itemDiv = document.getElementById('item_main_content');
+    firebaseData.getItemData(itemId,
+        function(itemData) {
+            setContainerData(itemDiv, 'item', 'category_name', itemId, itemData);
+            setContainerData(itemDiv, 'item', 'name', itemId, itemData);
+            setContainerData(itemDiv, 'item', 'quality', itemId, itemData);
+            setContainerData(itemDiv, 'item', 'description', itemId, itemData);
+
+            // and do the image
+            var image = itemDiv.querySelector('#item_image');
+            image.id = "item_image_" + itemId;
+            if (itemData.image) {
+                image.src = itemData.image;
+            }
+            else {
+                image.style.display = 'none';
+            }
+            // we will also want to show all the quantities under this item
+            firebaseData.getQuantitiesInItem(itemId,
+                function(querySnapshot) {
+                    // have all the items here, add them all to the category
+                    var noItems = querySnapshot.size;
+                    var itemCount = 0;
+                    querySnapshot.forEach(function(doc) {
+                        // for each doc (item) add the data
+                        onQuantityFound(table, doc.id, doc.data(), !isGbp, !isUsd, !isAud, !isNotes);
+                        if (++itemCount === noItems) {
+                            // this is the last item loaded, print this out then
+                            window.print();
+                        }
+                    })
+                },
+                function(error) {
+                    console.log('failed to find the quantities in an item', error);
+                });
         },
         function(error) {
             console.log('failed to find the quantities in an item', error);

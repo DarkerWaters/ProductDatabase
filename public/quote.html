@@ -47,26 +47,38 @@
 	</head>
 	<body class="landing">
 		<!-- Page content -->
-			<div class="main content">
+			<div id="item_main_content" class="main content">
 				<img src='images/large_image.jpg' style="height:60%" />
-				<table id='quantity_data_table'>
-					<thead>
-						<tr>
-							<th>Quantity</th>
-							<th colspan='4'>Pricing (Per Unit - Excluding GST/VAT)</th>
-						</tr>
-						<tr>
-							<th id="table_header_quantity"></th>
-							<th id="table_header_gbp">GBP (£)</th>
-							<th id="table_header_usd">USD ($)</th>
-							<th id="table_header_aud">AUD ($)</th>
-							<th id="table_header_notes">Notes</th>
-						</tr>
-					</thead>
-					<tbody>
-						
-					</tbody>
-				</table>
+				<div class="row uniform">
+					<div class="9u 6u(2) 12u$(3)" >
+						<h1 class="cat_name" id='item_category_name'>Category Name</h1>
+						<h3 class="item_name" id='item_name'>Item Name</h3>
+						<p class="item_qual" id='item_quality'>Item Quality</p>
+						<p class="item_desc" id='item_description'>Item Description</p>
+						<table id='quantity_data_table'>
+							<thead>
+								<tr>
+									<th>Quantity</th>
+									<th colspan='4'>Pricing (Per Unit - Excluding GST/VAT)</th>
+								</tr>
+								<tr>
+									<th id="table_header_quantity"></th>
+									<th id="table_header_gbp">GBP (£)</th>
+									<th id="table_header_usd">USD ($)</th>
+									<th id="table_header_aud">AUD ($)</th>
+									<th id="table_header_notes">Notes</th>
+								</tr>
+							</thead>
+							<tbody>
+								
+							</tbody>
+						</table>
+					</div>
+					<div class="3u 6u(2) 12u$(3)" >
+						<img id='logo_image' class='image fit' src='images/logo_square.png'/>
+						<img id='item_image' class='image fit' src='images/logo_square.png'/>
+					</div>
+				</div>
 			</div>
 	</body>
 </html>

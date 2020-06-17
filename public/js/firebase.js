@@ -613,6 +613,24 @@ const firebaseData = {
             });
     },
     
+    getItemData : function (itemDocId, onSuccess, onFailure) {
+        // get the item data from firebase
+        firebase.firestore().doc(firebaseData.collectionItems + '/' + itemDocId)
+            .get()
+            .then(function(doc) {
+                if (doc && doc.exists) {
+                    // do stuff with the data
+                    onSuccess(doc.data());
+                } else {
+                    // log this
+                    console.log("No document data exists for item", itemDocId);
+                }
+            })
+            .catch(function(error) {
+                onFailure ? onFailure(error) : console.log("Failed to get the document: ", error);
+            });
+    },
+    
     getQuantitiesInItem : function(itemDocId, onSuccess, onFailure) {
         // return the correct quantities for the item
         var itemRef = firebase.firestore().doc(firebaseData.collectionItems + '/' + itemDocId);
