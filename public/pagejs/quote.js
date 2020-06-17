@@ -1,7 +1,35 @@
 // https://firebase.google.com/docs/auth/web/manage-users#get_the_currently_signed-in_user
 // need to manage the user data in this page
 
+var textAreaBackground;
+var textAreaBorder;
 
+function printPage() {
+    document.querySelector('#print_button').style.display = "none";
+    
+    var textArea = document.querySelector('#text_comments');
+    if (textArea.value == '' || textArea.value == 'enter comments here') {
+        textArea.style.display = 'none';
+    }
+    else {
+        // remove the background and border though
+        textAreaBackground = textArea.style.backgroundColor;
+        textAreaBorder = textArea.style.border;
+        textArea.style.backgroundColor = "transparent";
+        textArea.style.border = "transparent";
+    }
+    // and print
+    window.print();
+}
+
+window.onafterprint = function(){
+    document.querySelector('#print_button').style.display = null;
+    var textArea = document.querySelector('#text_comments');
+    
+    textArea.style.backgroundColor = textAreaBackground;
+    textArea.style.border = textAreaBorder;
+    textArea.style.display = null;
+ }
 
 document.addEventListener('firebaseuserchange', function() {
     console.log('login changed so ready for input');
@@ -83,8 +111,10 @@ document.addEventListener('firebaseuserchange', function() {
                         // for each doc (item) add the data
                         onQuantityFound(table, doc.id, doc.data(), !isGbp, !isUsd, !isAud, !isNotes);
                         if (++itemCount === noItems) {
-                            // this is the last item loaded, print this out then
-                            window.print();
+                            // this is the last item loaded, print this out then, giving the image a second to load
+                            //setTimeout(function(){ window.print(); }, 1000);
+                            document.querySelector('#print_button').classList.remove('disabled');
+                            document.querySelector('#text_comments').value = "enter comments here";
                         }
                     })
                 },

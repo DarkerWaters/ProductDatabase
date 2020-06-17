@@ -156,7 +156,7 @@ function onQuantityFound(table, quantityId, quantityData) {
     addTableCell(newRow, quantityData.quantity);
     addTableCell(newRow, quantityData.gbp_notes ? quantityData.gbp_notes : '£' + quantityData.gbp);
     addTableCell(newRow, quantityData.usd_notes ? quantityData.usd_notes : '$' + quantityData.usd);
-    addTableCell(newRow, quantityData.aud_notes ? quantityData.aud_notes : 'AUD ' + quantityData.aud);
+    addTableCell(newRow, quantityData.aud_notes ? quantityData.aud_notes : 'A$' + quantityData.aud);
     addTableCell(newRow, quantityData.notes ? quantityData.notes : '');
     // and put the row into the table
     tBody.appendChild(newRow);

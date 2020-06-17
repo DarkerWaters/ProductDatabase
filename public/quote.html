@@ -47,14 +47,20 @@
 	</head>
 	<body class="landing">
 		<!-- Page content -->
-			<div id="item_main_content" class="main content">
-				<img src='images/large_image.jpg' style="height:60%" />
+			<div id="item_main_content" class="main content" style="padding: 4em;">
 				<div class="row uniform">
+					<div class="3u 6u(2) 12u$(3)" >
+						<img id='logo_image' src='images/logo_square.png' style="height: 100%;"/>
+					</div>
 					<div class="9u 6u(2) 12u$(3)" >
 						<h1 class="cat_name" id='item_category_name'>Category Name</h1>
 						<h3 class="item_name" id='item_name'>Item Name</h3>
 						<p class="item_qual" id='item_quality'>Item Quality</p>
 						<p class="item_desc" id='item_description'>Item Description</p>
+					</div>
+				</div>
+				<div class="row uniform">
+					<div class="9u 6u(2) 12u$(3)" >
 						<table id='quantity_data_table'>
 							<thead>
 								<tr>
@@ -75,8 +81,17 @@
 						</table>
 					</div>
 					<div class="3u 6u(2) 12u$(3)" >
-						<img id='logo_image' class='image fit' src='images/logo_square.png'/>
-						<img id='item_image' class='image fit' src='images/logo_square.png'/>
+						<img id='item_image' class='image fit' src='images/logo_square.png' height="80%"/>
+					</div>
+				</div>
+				<div class="row uniform">
+					<div class="9u 6u(2) 12u$(3)" >
+						<textarea id="text_comments" rows="4" cols="50" width="100%" style="resize: vertical;">
+							
+						</textarea>
+					</div>
+					<div class="3u 6u(2) 12u$(3)" >
+						<a class="button special disabled" id='print_button' onclick="printPage();">Print Quote</a>
 					</div>
 				</div>
 			</div>

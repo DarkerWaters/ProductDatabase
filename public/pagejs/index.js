@@ -196,7 +196,7 @@ function onQuantityFound(table, quantityId, quantityData, isHideGbp, isHideUsd, 
         addTableCell(newRow, quantityData.usd_notes ? quantityData.usd_notes : '$' + quantityData.usd);
     }
     if (!isHideAud) {
-        addTableCell(newRow, quantityData.aud_notes ? quantityData.aud_notes : 'AUD ' + quantityData.aud);
+        addTableCell(newRow, quantityData.aud_notes ? quantityData.aud_notes : 'A$' + quantityData.aud);
     }
     if (!isHideNotes) {
         addTableCell(newRow, quantityData.notes ? quantityData.notes : '');
