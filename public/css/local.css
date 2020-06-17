@@ -65,7 +65,7 @@ html, body {
 }
 
 .sidebar3 {
-  background: #cac1c1;
+  background: #549AD605;
   top:60px;
   bottom:30px;
   width: 30%;
@@ -82,7 +82,7 @@ html, body {
 }
 
 .sidebar1, .sidebar2 {
-  background: #cac1c1;
+  background: #549AD605;
   top:60px;
   bottom:30px;
   width: 30%;
@@ -119,7 +119,7 @@ html, body {
 
 .sidebar_footer {
   width: 100%;
-  background: whitesmoke;
+  background: #87b5dd;
 }
 
 .cat_id {
@@ -127,7 +127,7 @@ html, body {
 }
 
 .cat_desc {
-  background-color: #cac1c1;
+  background-color: #87b5dd;
   color: #545454;
   padding: 0.2em;
 }
@@ -138,18 +138,18 @@ html, body {
 
 .cat_name {
   font-size: -webkit-xxx-large;
-  background-color: #e0555a;
+  background-color: #549AD6;
   padding: 1em;
 }
 
 .item_name {
-  background-color: antiquewhite;
+  background-color: #87b5dd;
   padding-left: 1em;
   padding-right: 1em;
 }
 
 .item_qual {
-  background-color: antiquewhite;
+  background-color: #87b5dd;
   padding-left: 1em;
   padding-right: 1em;
 }
