@@ -65,8 +65,8 @@
 					<a href="">Admin</a>
 					<ul>
 						<li><a href="admin_users.html">Manage Users</a></li>
-						<li><a href="admin_data_import.html">Import Data</a></li>
-						<li><a href="admin_data_export.html">Export Data</a></li>
+						<li><a href="admin_data_import.html">Pricing Spreadsheet</a></li>
+						<li><a href="admin_data_export.html">Raw Data</a></li>
 						<li><a href="admin_data_delete.html">Delete Data</a></li>
 						<li><a href="admin_data_edit.html">Edit Data</a></li>
 					</ul>
@@ -82,13 +82,14 @@
 	<section id="main" class="wrapper style1">
 		<div class="container">
 			<header class="major">
-				<h1 class="item_name" style="padding:1em;">Export Data</h1>
+				<h1 class="item_name" style="padding:1em;">Raw Delimited Data</h1>
 				<p class="item_qual" style="padding:1em;">Export data to a txt file. Open this file in Excel and select that it is a <b>Delimited file</b> by <b>pipe |</b> to view nicely.</p>
 			</header>
 			<form id='data_form' method="post" action="onPostData()">
 				<header class="major">
-					<a class="button special" id='export_data' onclick="exportAllData();" >Export Data</a>
-					<span>This RAW exported data can be re-imported into a BLANK database to standup new Data !!WARNING, THIS IS DANGEROUS AND CURRENTLY UNTESTED!!!</span>
+					<p>Allows the export and import of the entire content of the databse (caution required in use)</p>
+					<p><a class="button special" id='export_data' onclick="exportAllData();" >Export Data</a></p>
+					<span>This RAW exported data can be re-imported into a BLANK database to standup new Data after <a href="/admin_data_delete.html">deleting</a> everything first.</span>
 					<input type="file" id="files" name="files[]" value="File" class="alt" style="display: none;"/>
 					<label id="import_files_label" for="files"></label>
 					<p>
