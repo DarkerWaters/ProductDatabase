@@ -5,6 +5,14 @@ var textAreaBackground;
 var textAreaBorder;
 
 function printPage() {
+    // get rid of the little extras
+    cleanScreen();
+    // and print
+    window.print();
+}
+
+function cleanScreen() {
+    document.querySelector('#clean_button').style.display = "none";
     document.querySelector('#print_button').style.display = "none";
     
     var textArea = document.querySelector('#text_comments');
@@ -18,11 +26,10 @@ function printPage() {
         textArea.style.backgroundColor = "transparent";
         textArea.style.border = "transparent";
     }
-    // and print
-    window.print();
 }
 
 window.onafterprint = function(){
+    document.querySelector('#clean_button').style.display = null;
     document.querySelector('#print_button').style.display = null;
     var textArea = document.querySelector('#text_comments');
     
