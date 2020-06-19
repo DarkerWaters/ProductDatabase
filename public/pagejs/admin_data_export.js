@@ -6,7 +6,7 @@ function clean(dataToClean) {
         return '';
     }
     else {
-        return dataToClean.replace('|', '');
+        return dataToClean.replace(/(\||\r\n|\n|\r)/gm, "");
     }
 }
 
@@ -103,6 +103,9 @@ async function exportAllData() {
     }
 
     var fileStrings = [];
+    // first line can define the seperator we use
+    fileStrings.push('sep=|');
+    // the next can be the title row
     line = 'database ID'
         + '|Category'
         + '|Item Name'
@@ -198,12 +201,12 @@ async function exportAllData() {
     progressText.innerHTML = "Downloaded export file";
 }
 
+var importedData;
+var activeRow;
+
 async function importAllDataRaw(event) {
     // import the raw (all) exported data, less checking but more powerful functionality
     var progressText = document.querySelector('#progress_text');
-
-    window.alert("Sorry, I can't let you do this, it will probably break everything");
-    return;
     
     progressText.innerHTML = 'picking file';
     var files = event.target.files;
@@ -225,18 +228,29 @@ async function importAllDataRaw(event) {
         firstValid = null;
         // and load the data
         var csv = event.target.result;
-        var data = $.csv.toArrays(csv, {"separator" : '|', "delimiter" : '|'});
+        importedData = $.csv.toArrays(csv, {"separator" : '|', "delimiter" : '|'});
         // ignoring the top (header row) import each row of data
-        for (var i = 1; i < data.length; ++i) {
-            // trim all the imported data on this row
-            for (var j = 0; j < data[i].length; ++j) {
-                data[i][j] = data[i][j].trim();
-            }
-            // and display it
-            importDataRow(data[i], progressText);
-        }
-        progressText.innerHTML = file.name + " loaded " + data.length + " rows";
+        activeRow = 0;
+        processNextDataRow(progressText);
     };
+}
+
+function processNextDataRow(progressText) {
+    // import the next row
+    if (++activeRow >= importedData.length) {
+        // we are at the end then
+        progressText.innerHTML = "Data successfully loaded " + importedData.length + " rows";
+    }
+    else {
+        if (importedData[activeRow] == 'sep=|') {
+            // this is expected, but not imported
+            processNextDataRow(progressText);
+        }
+        else {
+            // import this row
+            importDataRow(importedData[activeRow], progressText);
+        }
+    }
 }
 
 var lastCategoryDocument;
@@ -249,26 +263,32 @@ var quantityData;
 
 async function importDataRow(fileStrings, progressText) {
     // get all the data up front in one go - to be clear
-    var databaseId      = fileStrings[0];
-    var categoryName    = fileStrings[1];
-    var itemName        = fileStrings[2];
-    var itemQuality     = fileStrings[3];
-    var priceQuantity   = fileStrings[4];
-    var priceGBP        = fileStrings[5];
-    var priceUSD        = fileStrings[6];
-    var priceAUD        = fileStrings[7];
-    var description     = fileStrings[8];
-    var notes           = fileStrings[9];
-    var itemColour      = fileStrings[10];
-    var itemPhysical    = fileStrings[11];
-    var itemSupplier    = fileStrings[12];
-    var itemURL         = fileStrings[13];
-    var image           = fileStrings[14];
-    var priceGBPNotes   = fileStrings[15];
-    var priceUSDNotes   = fileStrings[16];
-    var priceAUDNotes   = fileStrings[17];
+    try {
+        var databaseId      = !fileStrings.length > 0 ? "" : clean(fileStrings[0]);
+        var categoryName    = !fileStrings.length > 1 ? "" : clean(fileStrings[1]);
+        var itemName        = !fileStrings.length > 2 ? "" : clean(fileStrings[2]);
+        var itemQuality     = !fileStrings.length > 3 ? "" : clean(fileStrings[3]);
+        var priceQuantity   = !fileStrings.length > 4 ? "" : clean(fileStrings[4]);
+        var priceGBP        = !fileStrings.length > 5 ? "" : clean(fileStrings[5]);
+        var priceUSD        = !fileStrings.length > 6 ? "" : clean(fileStrings[6]);
+        var priceAUD        = !fileStrings.length > 7 ? "" : clean(fileStrings[7]);
+        var description     = !fileStrings.length > 8 ? "" : clean(fileStrings[8]);
+        var notes           = !fileStrings.length > 9 ? "" : clean(fileStrings[9]);
+        var itemColour      = !fileStrings.length > 10 ? "" : clean(fileStrings[10]);
+        var itemPhysical    = !fileStrings.length > 11 ? "" : clean(fileStrings[11]);
+        var itemSupplier    = !fileStrings.length > 12 ? "" : clean(fileStrings[12]);
+        var itemURL         = !fileStrings.length > 13 ? "" : clean(fileStrings[13]);
+        var image           = !fileStrings.length > 14 ? "" : clean(fileStrings[14]);
+        var priceGBPNotes   = !fileStrings.length > 15 ? "" : clean(fileStrings[15]);
+        var priceUSDNotes   = !fileStrings.length > 16 ? "" : clean(fileStrings[16]);
+        var priceAUDNotes   = !fileStrings.length > 17 ? "" : clean(fileStrings[17]);
+    }
+    catch (error) {
+        window.alert("Failed get the 18 items of data at row " + activeRow + " " + error);
+    }
+
     if (categoryName && categoryName.length > 0) {
-        progressText.innerHTML = "importing category " + categoryName;
+        progressText.innerHTML = "" + activeRow + "importing category " + categoryName;
         // this object has a category name, so it is a category
         categoryData = firebaseData.defaultCategory(clean(categoryName));
         // set all the data on this category to be as from the file
@@ -278,19 +298,20 @@ async function importDataRow(fileStrings, progressText) {
         // and auto-complete the data to set the search words etc
         firebaseData.autoCompleteData(categoryData);
         // and put this in firebase - waiting.
-        await firebase.firestore().collection(firebaseData.collectionCategories)
+        firebase.firestore().collection(firebaseData.collectionCategories)
             .add(categoryData)
             .then(function(newDocRef) {
                 // this worked
                 lastCategoryDocument = newDocRef;
+                processNextDataRow(progressText);
             })
             .catch(function(error) {
                 // this didn't work
-                window.alert("Failed to add the category " + categoryName + " !!!QUIT EVERYTHING NOW!!! " + error);
+                window.alert("Failed to add the category " + categoryName + " process stopped at line " + activeRow + " " + error);
             });
     }
     else if (itemName && itemName.length > 0) {
-        progressText.innerHTML = "importing item " + categoryData['name'] + " -- " + itemName;
+        progressText.innerHTML = "" + activeRow + "importing item " + categoryData['name'] + " -- " + itemName;
         // this object has an item name so it is an item, create this item from the category data as well as the line of data
         itemData = firebaseData.defaultItem(lastCategoryDocument.id, categoryData, clean(itemName), clean(itemQuality));
         // set all the data on this item to be as from the file
@@ -311,57 +332,67 @@ async function importDataRow(fileStrings, progressText) {
         // and auto-complete the data to set the search words etc
         firebaseData.autoCompleteData(itemData);
         // and put this in firebase - waiting.
-        await firebase.firestore().collection(firebaseData.collectionItems)
+        firebase.firestore().collection(firebaseData.collectionItems)
             .add(itemData)
             .then(function(newDocRef) {
                 // this worked
                 lastItemDocument = newDocRef;
+                processNextDataRow(progressText);
             })
             .catch(function(error) {
                 // this didn't work
-                window.alert("Failed to add the item " + itemName + " !!!QUIT EVERYTHING NOW!!! " + error);
+                window.alert("Failed to add the item " + itemName + " process stopped at line " + activeRow + " " + error);
             });
     }
     else if (priceQuantity && priceQuantity.length > 0) {
-        progressText.innerHTML = "importing quantity for " + itemData['name'];
+        // because this is quicker (not waiting) we will not show progress for this
+        //progressText.innerHTML = "" + activeRow + "importing quantity for " + categoryData['name'] + " -- " + itemData['name'];
         // this object has a quantity, so that is what it is - create it from the data fro the line
         var quantityNumber = parseInt(clean(priceQuantity));
-        var gbpValue = parseInt(clean(priceGBP));
-        var usdValue = parseInt(clean(priceUSD));
-        var audValue = parseInt(clean(priceAUD));
-        if (!quantityNumber || isNaN(quantityNumber) ||
-            !gbpValue || isNaN(gbpValue) ||
-            !usdValue || isNaN(usdValue) ||
-            !audValue || isNaN(audValue)) {
-            window.alert("Quantity data for item " + databaseId + " contains non numbers !!!QUIT EVERYTHING NOW!!!");
+        var gbpValue = parseFloat(clean(priceGBP));
+        var usdValue = parseFloat(clean(priceUSD));
+        var audValue = parseFloat(clean(priceAUD));
+        if (isNaN(quantityNumber) ||
+            isNaN(gbpValue) ||
+            isNaN(usdValue) ||
+            isNaN(audValue)) {
+            window.alert("Quantity data for item " + databaseId + " contains non numbers at line " + activeRow + " process stopped");
         }
-        // create the default (comlete quantity)
-        quantityData = firebaseData.defaultQuantity(
-            lastItemDocument.id, 
-            itemData, 
-            quantityNumber, 
-            gbpValue, 
-            priceGBPNotes, 
-            usdValue, 
-            priceUSDNotes, 
-            audValue, 
-            priceAUDNotes, 
-            notes);
-        // this sets all the data there is on this object so just auto-complete the data to set the search words etc
-        firebaseData.autoCompleteData(itemData);
-        // and put this in firebase - waiting.
-        await firebase.firestore().collection(firebaseData.collectionQuantities)
-            .add(itemData)
-            .then(function(newDocRef) {
-                // this worked
-                lastQuantityDocument = newDocRef;
-            })
-            .catch(function(error) {
-                // this didn't work
-                window.alert("Failed to add the quantity " + databaseId + " !!!QUIT EVERYTHING NOW!!! " + error);
-            });
+        else {
+            // create the default (complete quantity)
+            quantityData = firebaseData.defaultQuantity(
+                lastItemDocument.id, 
+                itemData, 
+                quantityNumber, 
+                gbpValue, 
+                priceGBPNotes, 
+                usdValue, 
+                priceUSDNotes, 
+                audValue, 
+                priceAUDNotes, 
+                notes);
+            // this sets all the data there is on this object so just auto-complete the data to set the search words etc
+            firebaseData.autoCompleteData(itemData);
+            // and put this in firebase - waiting.
+            firebase.firestore().collection(firebaseData.collectionQuantities)
+                .add(quantityData)
+                .then(function(newDocRef) {
+                    // this worked
+                    lastQuantityDocument = newDocRef;
+                })
+                .catch(function(error) {
+                    // this didn't work
+                    window.alert("Failed to add the quantity " + databaseId + " process stopped at line " + activeRow + " " + error);
+                });
+            // there is no need to wait for the quality to import before proceeding
+            // so just go to the next row right away for speed's sake
+            processNextDataRow(progressText);
+        }
     }
-    progressText.innerHTML = "imported raw file data";
+    else {
+        // there isn't enough data in this row
+        window.alert("Stopped due to missing data in row " + activeRow + " data looks like:" + fileStrings);
+    }
 }
 
 document.addEventListener('firebaseuserchange', function() {

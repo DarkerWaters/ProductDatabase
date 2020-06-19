@@ -21,6 +21,9 @@
 		<!-- initialize the SDK after all desired features are loaded -->
 		<script defer src="/__/firebase/init.js"></script>
 
+		<!-- for taking a screenshot-->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+
 		<!-- add our page specific javascript here -->
 		<script src="pagejs/index.js"></script>
 		<script src="pagejs/quote.js"></script>
@@ -93,6 +96,8 @@
 					<div class="3u 6u(2) 12u$(3)" >
 						<a class="button special disabled" id='print_button' onclick="printPage();">Print Quote</a>
 						<a class="button special" id='clean_button' onclick="cleanScreen();">Clean Screen</a>
+						<a class="button special disabled" id='capture_button' onclick="setupScreenCapture();">Capture Screen</a>
+						<a class="button special" style="display: none;" id='download_button'>Download Image</a>
 					</div>
 				</div>
 			</div>

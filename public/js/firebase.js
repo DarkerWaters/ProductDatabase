@@ -514,10 +514,12 @@ const firebaseData = {
             });
     },
 
-    searchCollectionForWord : function (collectionName, searchTerm, onSuccess, onFailure) {
+    searchCollectionForWord : function (collectionName, orderTerm, searchTerm, onSuccess, onFailure) {
         if (!searchTerm || searchTerm === "") {
             // there is no term - get everything
-            firebase.firestore().collection(collectionName).get()
+            firebase.firestore().collection(collectionName)
+                .orderBy(orderTerm)
+                .get()
                 .then(function (querySnapshot) {
                     // this worked
                     onSuccess ?  onSuccess(querySnapshot) : null;

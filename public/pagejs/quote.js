@@ -11,9 +11,45 @@ function printPage() {
     window.print();
 }
 
+function setupScreenCapture() {
+    // get rid of the little extras
+    cleanScreen();
+    // and capture the screen
+    var downloadButton = document.querySelector('#download_button');
+    let region = document.querySelector("body"); // whole screen
+    html2canvas(region, {
+        onrendered: function(canvas) {
+            let pngUrl = canvas.toDataURL(); // png in dataURL format
+            let img = document.querySelector("#item_main_content");
+            img.src = pngUrl; 
+            // set this data as if the button were to download it
+            downloadButton.href = pngUrl;
+            downloadButton.download = "DisruptSports_quote.png";
+            // button is set to download the image - initiate this
+            downloadButton.click();
+            putCleanBack();
+        }
+    });
+}
+
+function pictureScreen() {
+    let region = document.querySelector("body"); // whole screen
+    html2canvas(region, {
+        onrendered: function(canvas) {
+        let pngUrl = canvas.toDataURL(); // png in dataURL format
+        let img = document.querySelector("#item_main_content");
+        img.src = pngUrl; 
+    
+        // here you can allow user to set bug-region
+        // and send it with 'pngUrl' to server
+        },
+    });
+}
+
 function cleanScreen() {
     document.querySelector('#clean_button').style.display = "none";
     document.querySelector('#print_button').style.display = "none";
+    document.querySelector('#capture_button').style.display = "none";
     
     var textArea = document.querySelector('#text_comments');
     if (textArea.value == '' || textArea.value == 'enter comments here') {
@@ -28,14 +64,19 @@ function cleanScreen() {
     }
 }
 
-window.onafterprint = function(){
+function putCleanBack() {
     document.querySelector('#clean_button').style.display = null;
     document.querySelector('#print_button').style.display = null;
+    document.querySelector('#capture_button').style.display = null;
     var textArea = document.querySelector('#text_comments');
     
     textArea.style.backgroundColor = textAreaBackground;
     textArea.style.border = textAreaBorder;
     textArea.style.display = null;
+}
+
+window.onafterprint = function(){
+    putCleanBack();
  }
 
 document.addEventListener('firebaseuserchange', function() {
@@ -121,6 +162,7 @@ document.addEventListener('firebaseuserchange', function() {
                             // this is the last item loaded, print this out then, giving the image a second to load
                             //setTimeout(function(){ window.print(); }, 1000);
                             document.querySelector('#print_button').classList.remove('disabled');
+                            document.querySelector('#capture_button').classList.remove('disabled');
                             document.querySelector('#text_comments').value = "enter comments here";
                         }
                     })

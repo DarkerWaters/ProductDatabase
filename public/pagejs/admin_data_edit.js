@@ -60,7 +60,7 @@ function onSubmitSearch() {
     categoriesFound = [];
 
     // search for categories only
-    firebaseData.searchCollectionForWord(firebaseData.collectionCategories, searchTerm,
+    firebaseData.searchCollectionForWord(firebaseData.collectionCategories, 'name', searchTerm,
         function(querySnapshot) {
             // success, add all to the HTML
             querySnapshot.forEach(function (doc) {

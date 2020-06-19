@@ -87,9 +87,9 @@ function onCategoryFound(categoryContainer, resultContainer, categoryId, categor
     }
 }
 
-function updateQuoteButton(itemId, quoteButton, gpbCheck, usdCheck, audCheck) {
-    quoteButton.href = "/quote.html?itemId=" + itemId + "&gbp=" + gpbCheck.checked + "&usd=" + usdCheck.checked + "&aud=" + audCheck.checked;
-    if (gpbCheck.checked || usdCheck.checked || audCheck.checked) {
+function updateQuoteButton(itemId, quoteButton, gbpCheck, usdCheck, audCheck) {
+    quoteButton.href = "/quote.html?itemId=" + itemId + "&gbp=" + gbpCheck.checked + "&usd=" + usdCheck.checked + "&aud=" + audCheck.checked;
+    if (gbpCheck.checked || usdCheck.checked || audCheck.checked) {
         quoteButton.classList.remove('disabled');
     }
     else {
@@ -107,7 +107,7 @@ function onItemFound(resultContainer, separator, itemId, itemData) {
     setContainerData(itemDiv, 'item', 'notes', itemId, itemData);
     setContainerData(itemDiv, 'item', 'url', itemId, itemData);
     // set the container data on the checkboxes - won't fill them but will set their IDs properly
-    var gpbCheck = setContainerData(itemDiv, 'item', 'quote_gbp', itemId, null);
+    var gbpCheck = setContainerData(itemDiv, 'item', 'quote_gbp', itemId, null);
     var usdCheck = setContainerData(itemDiv, 'item', 'quote_usd', itemId, null);
     var audCheck = setContainerData(itemDiv, 'item', 'quote_aud', itemId, null);
 
@@ -119,19 +119,19 @@ function onItemFound(resultContainer, separator, itemId, itemData) {
 
     // we need to listen to clicking to the labels to set the checkboxes they represent
     gbpLabel.onclick = function() {
-        gpbCheck.checked = !gpbCheck.checked;
-        updateQuoteButton(itemId, quoteButton, gpbCheck, usdCheck, audCheck);
+        gbpCheck.checked = !gbpCheck.checked;
+        updateQuoteButton(itemId, quoteButton, gbpCheck, usdCheck, audCheck);
     };
     usdLabel.onclick = function() {
         usdCheck.checked = !usdCheck.checked;
-        updateQuoteButton(itemId, quoteButton, gpbCheck, usdCheck, audCheck);
+        updateQuoteButton(itemId, quoteButton, gbpCheck, usdCheck, audCheck);
     };
     audLabel.onclick = function() {
         audCheck.checked = !audCheck.checked;
-        updateQuoteButton(itemId, quoteButton, gpbCheck, usdCheck, audCheck);
+        updateQuoteButton(itemId, quoteButton, gbpCheck, usdCheck, audCheck);
     };
     // do the initial button setup straight away
-    updateQuoteButton(itemId, quoteButton, gpbCheck, usdCheck, audCheck);
+    updateQuoteButton(itemId, quoteButton, gbpCheck, usdCheck, audCheck);
     
     // and do the image
     var image = itemDiv.querySelector('#item_image');
@@ -239,7 +239,7 @@ function onSubmitSearch() {
 
     if (document.getElementById('search_categories').checked) {
         // search for categories
-        firebaseData.searchCollectionForWord(firebaseData.collectionCategories, searchTerm,
+        firebaseData.searchCollectionForWord(firebaseData.collectionCategories, 'name', searchTerm,
             function(querySnapshot) {
                 // success, add all to the HTML
                 querySnapshot.forEach(function (doc) {
@@ -254,7 +254,7 @@ function onSubmitSearch() {
     }
     if (document.getElementById('search_items').checked) {
         // search for categories
-        firebaseData.searchCollectionForWord(firebaseData.collectionItems, searchTerm,
+        firebaseData.searchCollectionForWord(firebaseData.collectionItems, 'category_name', searchTerm,
             function(querySnapshot) {
                 // success, add all to the HTML
                 querySnapshot.forEach(function (doc) {
@@ -269,7 +269,7 @@ function onSubmitSearch() {
     }
     if (document.getElementById('search_quantities').checked) {
         // search for categories
-        firebaseData.searchCollectionForWord(firebaseData.collectionItems, searchTerm,
+        firebaseData.searchCollectionForWord(firebaseData.collectionQuantities, 'category_name', searchTerm,
             function(querySnapshot) {
                 // success, add all to the HTML
                 querySnapshot.forEach(function (doc) {
