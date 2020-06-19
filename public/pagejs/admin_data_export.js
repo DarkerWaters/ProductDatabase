@@ -104,7 +104,7 @@ async function exportAllData() {
 
     var fileStrings = [];
     // first line can define the seperator we use
-    fileStrings.push('sep=|');
+    fileStrings.push('sep=|\n');
     // the next can be the title row
     line = 'database ID'
         + '|Category'
@@ -190,7 +190,7 @@ async function exportAllData() {
             // Browsers that support HTML5 download attribute
             var url = URL.createObjectURL(blob);
             link.setAttribute("href", url);
-            link.setAttribute("download", "csvFileExport.txt");
+            link.setAttribute("download", "DisruptSportsRAW.csv");
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
