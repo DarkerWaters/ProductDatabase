@@ -143,6 +143,7 @@ function onItemFound(resultContainer, separator, itemId, itemData) {
     var linkTitle = itemDiv.querySelector('#item_url_' + itemId)
     if (itemData.url && linkTitle) {
         linkTitle.href = itemData.url;
+        linkTitle.innerHTML = "external link";
         linkTitle.style.display = null;
     }
     else if (linkTitle) {

@@ -60,6 +60,7 @@
 						<h3 class="item_name" id='item_name'>Item Name</h3>
 						<p class="item_qual" id='item_quality'>Item Quality</p>
 						<p class="item_desc" id='item_description'>Item Description</p>
+						<p class="item_notes" id='item_notes'>Item Notes</p>
 					</div>
 				</div>
 				<div class="row uniform">
@@ -85,6 +86,7 @@
 					</div>
 					<div class="3u 6u(2) 12u$(3)" >
 						<img id='item_image' class='image fit' src='images/logo_square.png' height="80%"/>
+						<a id='item_url' target="_blank">External Link</a>
 					</div>
 				</div>
 				<div class="row uniform">
@@ -96,7 +98,7 @@
 					<div class="3u 6u(2) 12u$(3)" >
 						<a class="button special disabled" id='print_button' onclick="printPage();">Print Quote</a>
 						<a class="button special" id='clean_button' onclick="cleanScreen();">Clean Screen</a>
-						<a class="button special disabled" id='capture_button' onclick="setupScreenCapture();">Capture Screen</a>
+						<a class="button special disabled" id='capture_button' style="display: none;" onclick="setupScreenCapture();">Capture Screen</a>
 						<a class="button special" style="display: none;" id='download_button'>Download Image</a>
 					</div>
 				</div>
