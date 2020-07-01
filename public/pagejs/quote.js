@@ -191,7 +191,7 @@ document.addEventListener('firebaseuserchange', function() {
                             //setTimeout(function(){ window.print(); }, 1000);
                             document.querySelector('#print_button').classList.remove('disabled');
                             document.querySelector('#capture_button').classList.remove('disabled');
-                            document.querySelector('#text_comments').value = "enter comments here";
+                            document.querySelector('#text_comments').value = "This quote is valid for 14 days.";
                         }
                     })
                 },
