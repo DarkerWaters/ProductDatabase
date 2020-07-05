@@ -55,6 +55,32 @@ function searchUserEmails() {
         });
 }
 
+function getAllOpenRequests() {
+    var container = document.getElementById('found_user_container');
+    container.innerHTML = "Searching for all active requests.";
+
+    firebase.firestore().collection('users').where("isRequestPending", "==", true).get()
+        .then(function(querySnapshot) {
+            // this worked
+            if (querySnapshot.empty) {
+                container.innerHTML = "Sorry: failed to find any 'isRequestPending==true' users";
+            }
+            else {
+                container.innerHTML = "";
+            }
+            querySnapshot.forEach(function (doc) {
+                // for each user, add the user to the container
+                displayUserData(container, doc);
+            });
+            return 1;
+        })
+        .catch(function(error) {
+            // this didn't work
+            container.innerHTML = "Sorry: failed to find any users with the 'isRequestPending' to be true: " + error;
+            return 0;
+        });
+}
+
 function getAllAdministrator() {
     var container = document.getElementById('found_user_container');
     container.innerHTML = "Searching for all administrators.";
