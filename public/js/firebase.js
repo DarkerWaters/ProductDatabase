@@ -433,9 +433,9 @@ const firebaseData = {
         var newUserData = {
             // setup the blank user data here
             name: user.displayName,
-            name_lc: lcRef(user.displayName),
+            name_lc: this.lcRef(user.displayName),
             email: user.email,
-            email_lc: lcRef(user.email),
+            email_lc: this.lcRef(user.email),
             isAdmin: false,
             isReader: false,
             isTracked: true,
