@@ -231,6 +231,8 @@ const firebaseData = {
     collectionItems : 'items',
     collectionQuantities : 'quantities',
     collectionUsers : 'users',
+    currentUserData : null,
+    logsCleaned : [],
 
     lcRef : function (str) {
         if (!str) {
@@ -335,6 +337,17 @@ const firebaseData = {
         });
     },
 
+    defaultLogItem : function(itemId, itemData) {
+        return {
+            at : new Date(),
+            item_name : itemData.name,
+            item_quality : itemData.quality,
+            item_ref : firebase.firestore().doc(firebaseData.collectionItems + '/' + itemId),
+            category_name : itemData.category_name,
+            category_ref : itemData.category_ref,
+        };
+    },
+
     autoCompleteData : function(docData) {
         // complete the data on this object, first remove spaces and lower case the name for searching
         var wordsArray = []
@@ -394,21 +407,21 @@ const firebaseData = {
             var fData = this;
             // get the data for the user
             firebase.firestore().collection(firebaseData.collectionUsers).doc(userUid).get()
-            .then(function(doc) {
-                if (doc && doc.exists) {
+                .then(function(doc) {
+                    if (doc && doc.exists) {
+                        firebaseData.currentUserData = doc.data();
+                    } else {
+                        // log this
+                        console.log("No document data exists for user", user);
+                        // but let's fix it though
+                        firebaseData.currentUserData = fData.createDefaultUserData(user);
+                    }
                     // do stuff with the data
-                    onSuccess(doc.data());
-                } else {
-                    // log this
-                    console.log("No document data exists for user", user);
-                    // but let's fix it though
-                    var newData = fData.createDefaultUserData(user);
-                    onSuccess(newData);
-                }
-            })
-            .catch(function(error) {
-                onFailure ? onFailure(error) : console.log("Failed to get the document: ", error);
-            });
+                    onSuccess(firebaseData.currentUserData);
+                })
+                .catch(function(error) {
+                    onFailure ? onFailure(error) : console.log("Failed to get the document: ", error);
+                });
         }
         else {
             // no firebase
@@ -453,6 +466,89 @@ const firebaseData = {
             console.log("  Email: " + profile.email);
             console.log("  Photo URL: " + profile.photoURL);
         });
+    },
+
+    logUserActivity : function (activity, itemId, itemData) {
+        var user = this.getUser();
+        if (user) {
+            // have a user, if they are being tracked then we need to log this action to the database
+            if (!firebaseData.currentUserData) {
+                // there is no user data, get it before we track anything against the user
+                this.getUserData(user, 
+                    function(firebaseUserData) {
+                        // this worked, track the data here
+                        firebaseData.addTrackedData(user, firebaseUserData, activity, itemId, itemData);
+                    },
+                    function(error) {
+                        // failed
+                        console.log('failed log anything against the current user', error);
+                    });
+            } else {
+                // just do it against the cached user data
+                firebaseData.addTrackedData(user, firebaseData.currentUserData, activity, itemId, itemData);
+            }
+        }
+    },
+
+    addTrackedData : function (user, userData, activity, itemId, itemData) {
+        if (user && userData && userData.isTracked) {
+            // we are tracking this activity, add to the relevant collection of data, first create the data
+            var activityData = this.defaultLogItem(itemId, itemData);
+            firebase.firestore()
+                .collection(firebaseData.collectionUsers)
+                .doc(user.uid)
+                .collection(activity)
+                .add(activityData)
+                .then(function(newDocRef) {
+                    // this worked, fine
+                    
+                })
+                .catch(function(error) {
+                    // this didn't work
+                    console.log("Failed to add the document: ", error);
+                });
+            // we fired off this request to log the data, we also want to keep this a little clean to remove old
+            // requests we are no longer interested in
+            if (!this.logsCleaned.includes(activity)) {
+                // this wasn't cleaned in this session yet - clean it now
+                var deleteDate = new Date();
+                // Set it to one month ago
+                deleteDate.setMonth(deleteDate.getMonth() - 1);
+                var firebaseDeleteDate = firebase.firestore.Timestamp.fromDate(deleteDate);
+                // and find everything that is this date or older to delete
+                firebase.firestore()
+                    .collection(firebaseData.collectionUsers)
+                    .doc(user.uid)
+                    .collection(activity)
+                    .where("at", "<", firebaseDeleteDate)
+                    .get()
+                    .then(function(querySnapshot) {
+                        // have all the data, remove all that are too old
+                        querySnapshot.forEach(function (doc) {
+                            // for each log item - delete ones that are too old
+                            firebase.firestore()
+                                .collection(firebaseData.collectionUsers)
+                                .doc(user.uid)
+                                .collection(activity)
+                                .doc(doc.id)
+                                .delete()
+                                .then(function() {
+                                    // deleted ok
+                                })
+                                .catch(function (error) {
+                                    // error
+                                    console.log('failed to delete a log item', error);
+                                });
+                        });
+                    })
+                    .catch(function(error) {
+                        // this didn't work
+                        console.log("Failed to get the log collection to clean up: ", error);
+                    });
+
+                this.logsCleaned.push(activity);
+            }
+        }
     },
 
     updateUserData : function (user, userData, onSuccess, onFailure) {

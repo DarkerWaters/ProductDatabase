@@ -125,7 +125,7 @@ function onCategoryFound(categoryContainer, resultContainer, categoryId, categor
         var links = linkDiv.getElementsByTagName('a');
         for (var i = 0; i < links.length; ++i) {
             links[i].id = "link_" + i + "_" + categoryId;
-            links[i].href = "#" + categoryId;
+            links[i].href = '#' + categoryId;
             links[i].innerHTML = categoryData.name;
         }
         // and add to the container
@@ -218,7 +218,17 @@ function onItemFound(resultContainer, separator, itemId, itemData) {
     // and the link
     var linkTitle = itemDiv.querySelector('#item_url_' + itemId)
     if (itemData.url && linkTitle) {
-        linkTitle.href = itemData.url;
+        linkTitle.onclick = function() {
+            // when they click this, log their interest
+            firebaseData.logUserActivity('clicked', itemId, itemData);
+            // and send them there
+            var targetLink = document.createElement('a');
+            // going to a new tab
+            targetLink.target= "_blank";
+            targetLink.href = itemData.url;
+            targetLink.click();
+        }
+        linkTitle.href = '#';
         linkTitle.innerHTML = "external link";
         linkTitle.style.display = null;
     }
@@ -241,6 +251,8 @@ function onItemFound(resultContainer, separator, itemId, itemData) {
         }
         else {
             table.style.display = null;
+            // log this activity if valid to do so
+            firebaseData.logUserActivity('priced', itemId, itemData);
         }
     }
     resultContainer.insertBefore(itemDiv, separator);

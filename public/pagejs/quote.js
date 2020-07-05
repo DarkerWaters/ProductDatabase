@@ -5,11 +5,14 @@ var textAreaBackground;
 var textAreaBorder;
 var isShowCaptureScreenButton = false;
 var databaseData;
+var itemId;
 
 function printPage() {
     // get rid of the little extras
     cleanScreen();
     window.document.title = createFilename();
+    // log this activity if valid to do so
+    firebaseData.logUserActivity('printed', itemId, databaseData);
     // and print
     window.print();
 }
@@ -35,6 +38,8 @@ function createFilename() {
 function setupScreenCapture() {
     // get rid of the little extras
     cleanScreen();
+    // log this activity if valid to do so
+    firebaseData.logUserActivity('captured', databaseData);
     // and capture the screen
     var downloadButton = document.querySelector('#download_button');
     let region = document.querySelector("body"); // whole screen
@@ -99,7 +104,6 @@ document.addEventListener('firebaseuserchange', function() {
     }
             
     var items = location.search.substr(1).split("&");
-    var itemId = 0;
     var isGbp = false;
     var isUsd = false;
     var isAud = false;
