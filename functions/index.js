@@ -43,6 +43,13 @@ exports.createUserData = functions.auth.user().onCreate((user) => {
         email_lc: lcRef(user.email),
         isAdmin: false,
         isReader: false,
+        isTracked: true,
+        company: "",
+        company_lc: "",
+        phone: "",
+        trade: "",
+        trade_no: "",
+        isRequestPending: false,
     };
     db.collection('users').doc(user.uid).set(newUserData, {merge: true})
         .then(function() {

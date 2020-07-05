@@ -109,25 +109,51 @@
 				<hr>
 				<div style="display: none;">
 					<!-- hidden template area -->
-					<div id="user_template" class="row uniform" >
-						<div class="3u 12u(3)">
-							<h4>Firebase UID</h4>
-							<input type="text" id="user_uid" readonly />
+					<div id="user_template" >
+						<div class="row uniform">
+							<div class="3u 12u(3)">
+								<h4>Firebase UID</h4>
+								<input type="text" id="user_uid" readonly />
+							</div>
+							<div class="3u 12u(3)">
+								<h4>User Name</h4>
+								<input type="text" id="user_name" readonly />
+								<h5 id="user_title">User Title</h5>
+							</div>
+							<div class="3u 12u(3)">
+								<h4>User Email</h4>
+								<input type="text" id="user_email" readonly />
+								<a id="user_send_email" href="#">send email</a>
+							</div>
+							<div class="3u 12u(3)">
+								<h4>Permissions</h4>
+								<input type="checkbox" id="user_isAdmin" />
+								<label id="user_isAdmin_label" for="user_isAdmin">Is Administrator</label>
+								<input type="checkbox" id="user_isReader" />
+								<label id="user_isReader_label" for="user_isReader">Is Reader</label>
+								<input type="checkbox" id="user_isTracked" />
+								<label id="user_isTracked_label" for="user_isTracked">Is Tracked</label>
+							</div>
 						</div>
-						<div class="3u 12u(3)">
-							<h4>User Name</h4>
-							<input type="text" id="user_name" readonly />
-						</div>
-						<div class="3u 12u(3)">
-							<h4>User Email</h4>
-							<input type="text" id="user_email" readonly />
-						</div>
-						<div class="3u 12u(3)">
-							<h4>Permissions</h4>
-							<input type="checkbox" id="user_isAdmin" />
-							<label id="user_isAdmin_label" for="user_isAdmin">Is Administrator</label>
-							<input type="checkbox" id="user_isReader" />
-							<label id="user_isReader_label" for="user_isReader">Is Reader</label>
+						<div id="user_open_request" class="row uniform" style="display: none;">
+							<div class="3u 12u(3)">
+								<h4>Request</h4>
+								<input type="checkbox" id="user_isDistributor" />
+								<label id="user_isDistributor_label" for="user_isDistributor">Authorise</label>
+							</div>
+							<div class="3u 12u(3)">
+								<h4>Company</h4>
+								<input type="text" id="user_company" readonly />
+							</div>
+							<div class="3u 12u(3)">
+								<h4>Phone</h4>
+								<input type="text" id="user_phone" readonly />
+							</div>
+							<div class="3u 12u(3)">
+								<h4>Trade Body</h4>
+								<input type="text" id="user_tbm" readonly />
+								<input type="text" id="user_tbn" readonly />
+							</div>
 						</div>
 						<span id="user_message"></span>
 					</div>

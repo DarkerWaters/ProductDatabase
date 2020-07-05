@@ -6,6 +6,7 @@ function checkUserState() {
     if (user) {
         // logged in - hide this
         document.getElementById('not_logged_in').style.display = 'none';
+        document.getElementById('submit_access_reminder').style.display = 'none';
         document.getElementById('not_reader').style.display = null;
         firebaseData.getUserData(user,
             function(firebaseUserData) {
@@ -17,6 +18,11 @@ function checkUserState() {
                 else {
                     // not a reader
                     document.getElementById('not_reader').style.display = null;
+                    populateRegistrationForm(firebaseUserData);
+                }
+                if (firebaseUserData['isRequestPending']) {
+                    // let them send their reminder as the request is pending
+                    document.getElementById('submit_access_reminder').style.display = null;
                 }
             }),
             function(error) {
@@ -28,7 +34,77 @@ function checkUserState() {
     else {
         // not logged in, show this
         document.getElementById('not_logged_in').style.display = null;
-        document.getElementById('not_logged_in').style.display = null;
+        document.getElementById('not_reader').style.display = 'none';
+        document.getElementById('submit_access_reminder').style.display = 'none';
+    }
+}
+
+function populateRegistrationForm(firebaseUserData) {
+    document.getElementById('user_name').value = firebaseUserData['name'];
+    document.getElementById('user_email').value = firebaseUserData['email'];
+    document.getElementById('user_company').value = firebaseUserData['company'];
+    document.getElementById('user_phone').value = firebaseUserData['phone'];
+    document.getElementById('user_tbm').value = firebaseUserData['trade'];
+    document.getElementById('user_tbn').value = firebaseUserData['trade_no'];
+}
+
+function onSendReminderEmail() {
+    // construct the reminder following a request submission
+    var mail = document.createElement("a");
+    mail.href = "mailto:INFO@DISRUPTSPORTS.COM"
+                + "?subject="
+                + "I would like access to your product database please"
+                + "&body="
+                + "From " + document.getElementById('user_name').value + ","
+                + "%0D%0AEmail: " + document.getElementById('user_email').value
+                + "%0D%0ACompany: " + document.getElementById('user_company').value
+                + "%0D%0APhone: " + document.getElementById('user_phone').value
+                + "%0D%0ATrade Body Member: " + document.getElementById('user_tbm').value
+                + "%0D%0ATrade Body Number: " + document.getElementById('user_tbn').value
+                + "%0D%0A."
+                + "%0D%0AIf you could authorise this submission, I would very much appreciate it."
+                ;
+    mail.click();
+}
+
+function onSubmitAccessRequest() {
+    // get the controls to get the data from
+    var nameEdit = document.getElementById('user_name');
+    // email is readonly
+    //var emailEdit = document.getElementById('user_email');
+    var companyEdit = document.getElementById('user_company');
+    var phoneEdit = document.getElementById('user_phone');
+    var tbmEdit = document.getElementById('user_tbm');
+    var tbnEdit = document.getElementById('user_tbn');
+    // create the data from their request here
+    var newUserData = {
+        // setup the blank user data here
+        name: nameEdit.value,
+        name_lc: firebaseData.lcRef(nameEdit.value),
+        company: companyEdit.value,
+        company_lc: firebaseData.lcRef(companyEdit.value),
+        phone: phoneEdit.value,
+        trade: tbmEdit.value,
+        trade_no: tbnEdit.value,
+        isRequestPending: true,
+    };
+    var user = firebaseData.getUser();
+    if (user) {
+        // and push this data to the database
+        firebaseData.updateUserData(user, newUserData, function() {
+                // this worked
+                document.getElementById('user_message').innerHTML = "Request for access was submitted, you might want to contact your Disrupt Sports representative to speed things along...";
+                checkUserState();
+            },
+            function(error) {
+                // failed
+                document.getElementById('user_message').innerHTML = "Sorry but we failed to send that request. Try logging on again or you might want to contact your Disrupt Sports representative.";
+                
+            });
+    }
+    else {
+        // shouldn't be shown
+        checkUserState();
     }
 }
 

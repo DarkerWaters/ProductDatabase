@@ -425,6 +425,13 @@ const firebaseData = {
             email_lc: lcRef(user.email),
             isAdmin: false,
             isReader: false,
+            isTracked: true,
+            company: "",
+            company_lc: "",
+            phone: "",
+            trade: "",
+            trade_no: "",
+            isRequestPending: false,
         };
         firebase.firestore().collection(firebaseData.collectionUsers).doc(user.uid).set(newUserData, {merge: true})
             .then(function() {
@@ -449,15 +456,16 @@ const firebaseData = {
     },
 
     updateUserData : function (user, userData, onSuccess, onFailure) {
+        this.autoCompleteData(userData);
         firebase.firestore().collection("users").doc(user.uid).update(userData)
-        .then(function() {
-            // this worked
-            onSuccess ? onSuccess() : null;
-        })
-        .catch(function(error) {
-            // this failed
-            onFailure ? onFailure(error) : console.log("Failed to update the document: ", error);
-        });
+            .then(function() {
+                // this worked
+                onSuccess ? onSuccess() : null;
+            })
+            .catch(function(error) {
+                // this failed
+                onFailure ? onFailure(error) : console.log("Failed to update the document: ", error);
+            });
     },
 
     deleteAllUserData : function(user, onSuccess, onFailure) {
