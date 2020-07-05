@@ -23,7 +23,7 @@
 	<script defer src="/__/firebase/init.js"></script>
 
 	<!-- add our page specific javascript here -->
-	<script src="pagejs/admin_users.js"></script>
+	<script src="pagejs/admin_activity.js"></script>
 
 	<!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
 	<script src="js/jquery.min.js"></script>
@@ -61,8 +61,8 @@
 				<li class='menu_admin' style="display: none">
 					<a href="">Admin</a>
 					<ul>
-						<li><a href="admin_users.html">Manage Users</a></li>
-								<li><a href="admin_activity.html">View Activity</a></li>
+						<li><a href="admin_activitys.html">Manage Users</a></li>
+						<li><a href="admin_activity.html">View Activity</a></li>
 						<li><a href="admin_data_import.html">Pricing Spreadsheet</a></li>
 						<li><a href="admin_data_export.html">Raw Data</a></li>
 						<li><a href="admin_data_delete.html">Delete Data</a></li>
@@ -83,88 +83,38 @@
 	<section id="main" class="wrapper style1">
 		<div class="container">
 			<header class="major">
-				<h4 class="item_name" style="padding:1em;">Administer Users</h4>
-				<p class="item_qual" style="padding:1em;">A remote control over your users, for more functionality go to the <a href="https://console.firebase.google.com/">firebase</a> console...</p>
+				<h4 class="item_name" style="padding:1em;">View Tracked Activity</h4>
+				<p class="item_qual" style="padding:1em;">When a user is {isTracked} then their interest is tracked, this is displayed here</p>
 			</header>
-			<form id='data_form' method="post" action="onPostData()">
-				<header class="major">
-					<h3>User Search</h3>
-				</header>
-				<div class="row uniform">
-					<div class="4u 12u(3)">
-						<input type="text" name="name" id="name" value="" placeholder="Name" />
-						<label for="name">Name</label>
-						<a class="button special" id='search_name_button' onclick="searchUserNames();">Find...</a>
-					</div>
-					<div class="4u 12u(3)">
-						<input type="email" name="email" id="email" value="" placeholder="Email" />
-						<label for="email">Email</label>
-						<a class="button special" id='search_email_button' onclick="searchUserEmails();">Find...</a>
-					</div>
-					<div class="4u 12u(3)">
-						<a class="button special" id='search_all_button' onclick="getAllOpenRequests();">Open Requests</a>
-						<a class="button special" id='search_admin_button' onclick="getAllAdministrator();">Administrators</a>
-						<a class="button special" id='search_reader_button' onclick="getAllReaders();">Readers</a>
-						<a class="button special" id='search_all_button' onclick="getAllUsers();">All Users</a>
-					</div>
+			<div class="row uniform">
+				<div class="4u 12u(3)">
+					<input type="text" name="name" id="name" value="" placeholder="Name" />
+					<label for="name">Name</label>
+					<a class="button special" id='search_name_button' onclick="searchUserNames();">Find...</a>
+				</div>
+				<div class="4u 12u(3)">
+					<input type="email" name="email" id="email" value="" placeholder="Email" />
+					<label for="email">Email</label>
+					<a class="button special" id='search_email_button' onclick="searchUserEmails();">Find...</a>
+				</div>
+				<div class="4u 12u(3)">
+					<a class="button special" id='search_all_button' onclick="getAllActivity();">List all activity</a>
+					<p>This will also automatically delete old<br/>(> 1 month) tracking data.</p>
+				</div>
+			</div>
+			<div style="display: none;">
+				<!-- hidden template area -->
+				<div id="activity_template" >
+					<span>
+						On <b><span id="activity_date"></span></b> <span id="activity_name"></span> (<span id="activity_email"></span> of <span id="activity_company"></span>) <b><span id="activity_type"></span></b>
+						<span id="activity_quality"></span> <span id="activity_item"></span> <span id="activity_category"></span>
+					</span>
 				</div>
 				<hr>
-				<div style="display: none;">
-					<!-- hidden template area -->
-					<div id="user_template" >
-						<div class="row uniform">
-							<div class="3u 12u(3)">
-								<h4>Firebase UID</h4>
-								<input type="text" id="user_uid" readonly />
-							</div>
-							<div class="3u 12u(3)">
-								<h4>User Name</h4>
-								<input type="text" id="user_name" readonly />
-								<h5 id="user_title">User Title</h5>
-							</div>
-							<div class="3u 12u(3)">
-								<h4>User Email</h4>
-								<input type="text" id="user_email" readonly />
-								<a id="user_send_email" href="#">send email</a>
-							</div>
-							<div class="3u 12u(3)">
-								<h4>Permissions</h4>
-								<input type="checkbox" id="user_isAdmin" />
-								<label id="user_isAdmin_label" for="user_isAdmin">Is Administrator</label>
-								<input type="checkbox" id="user_isReader" />
-								<label id="user_isReader_label" for="user_isReader">Is Reader</label>
-								<input type="checkbox" id="user_isTracked" />
-								<label id="user_isTracked_label" for="user_isTracked">Is Tracked</label>
-							</div>
-						</div>
-						<div id="user_open_request" class="row uniform" style="display: none;">
-							<div class="3u 12u(3)">
-								<h4>Request</h4>
-								<input type="checkbox" id="user_isDistributor" />
-								<label id="user_isDistributor_label" for="user_isDistributor">Authorise</label>
-							</div>
-							<div class="3u 12u(3)">
-								<h4>Company</h4>
-								<input type="text" id="user_company" readonly />
-							</div>
-							<div class="3u 12u(3)">
-								<h4>Phone</h4>
-								<input type="text" id="user_phone" readonly />
-							</div>
-							<div class="3u 12u(3)">
-								<h4>Trade Body</h4>
-								<input type="text" id="user_tbm" readonly />
-								<input type="text" id="user_tbn" readonly />
-							</div>
-						</div>
-						<span id="user_message"></span>
-					</div>
-					<hr>
-				</div>
-				<div id="found_user_container" class="row uniform">
-					<!-- this area will be totally cleared each time a search for user is performed-->
-				</div>
-			</form>
+			</div>
+			<div id="found_activity_container">
+				<!-- this area will be totally cleared each time a search for activity is performed-->
+			</div>
 		</div>
 	</section>
 

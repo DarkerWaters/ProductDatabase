@@ -47,5 +47,10 @@ service cloud.firestore {
       allow create, write, delete, update : if isAdmin();
 	    allow read : if isReader();
     }
+    // Allow public write access to track activity, but only admins can read
+    match /activity/{documents=**} {
+      allow create : if isReader();
+      allow read, delete, update : if isAdmin();
+    }
   }
 }

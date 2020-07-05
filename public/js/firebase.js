@@ -231,6 +231,7 @@ const firebaseData = {
     collectionItems : 'items',
     collectionQuantities : 'quantities',
     collectionUsers : 'users',
+    collectionActivity: 'activity',
     currentUserData : null,
     logsCleaned : [],
 
@@ -337,14 +338,21 @@ const firebaseData = {
         });
     },
 
-    defaultLogItem : function(itemId, itemData) {
+    defaultLogItem : function(user, userData, activity, itemId, itemData) {
         return {
+            action : activity ? activity : "",
+            by : user.uid ? user.uid : "",
+            by_name : userData.name ? userData.name : "",
+            by_name_lc: userData.name ? firebaseData.lcRef(userData.name) : "",
+            by_email : userData.email ? userData.email : "",
+            by_email_lc: userData.email ? firebaseData.lcRef(userData.email) : "",
+            by_company: userData.company ? userData.company : "",
             at : new Date(),
-            item_name : itemData.name,
-            item_quality : itemData.quality,
+            item_name : itemData.name ? itemData.name : "",
+            item_quality : itemData.quality ? itemData.quality : "",
             item_ref : firebase.firestore().doc(firebaseData.collectionItems + '/' + itemId),
-            category_name : itemData.category_name,
-            category_ref : itemData.category_ref,
+            category_name : itemData.category_name ? itemData.category_name : "",
+            category_ref : itemData.category_ref ? itemData.category_ref : "",
         };
     },
 
@@ -490,10 +498,69 @@ const firebaseData = {
         }
     },
 
+    getGlobalTrackingData : function(lastVisible, limit, onSuccess) {
+        // go through all the expired global data and delete all the old stuff
+        var search;
+        var deleteDate = new Date();
+        // Set it to one month ago
+        deleteDate.setMonth(deleteDate.getMonth() - 1);
+        var firebaseDeleteDate = firebase.firestore.Timestamp.fromDate(deleteDate);
+        // create the correct search
+        if (lastVisible) {
+            search = firebase.firestore().collection(firebaseData.collectionActivity)
+                .orderBy("at", "desc")
+                .startAfter(lastVisible)
+                .limit(limit);
+        } else {
+            search = firebase.firestore().collection(firebaseData.collectionActivity)
+                .orderBy("at", "desc")
+                .limit(limit);
+        }
+        // find everything in range and return this as information
+        search.get()
+            .then(function(querySnapshot) {
+                // have all the data, let the caller have
+                onSuccess(querySnapshot);
+            })
+            .catch(function(error) {
+                // this didn't work
+                console.log("Failed to get the log collection to show activity: ", error);
+            });
+        if (!lastVisible) {
+            // and find everything that is this date or older to delete
+            firebase.firestore()
+                .collection(firebaseData.collectionActivity)
+                .where("at", "<", firebaseDeleteDate)
+                .get()
+                .then(function(querySnapshot) {
+                    // have all the data, remove all that are too old
+                    querySnapshot.forEach(function (doc) {
+                        // for each log item - delete ones that are too old
+                        firebase.firestore()
+                            .collection(firebaseData.collectionActivity)
+                            .doc(doc.id)
+                            .delete()
+                            .then(function() {
+                                // deleted ok
+                            })
+                            .catch(function (error) {
+                                // error
+                                console.log('failed to delete a global log item', error);
+                            });
+                    });
+                })
+                .catch(function(error) {
+                    // this didn't work
+                    console.log("Failed to get the log collection to clean up: ", error);
+                });
+        }
+    },
+
     addTrackedData : function (user, userData, activity, itemId, itemData) {
         if (user && userData && userData.isTracked) {
             // we are tracking this activity, add to the relevant collection of data, first create the data
-            var activityData = this.defaultLogItem(itemId, itemData);
+            var activityData = this.defaultLogItem(user, userData, activity, itemId, itemData);
+            // let the user track their progress
             firebase.firestore()
                 .collection(firebaseData.collectionUsers)
                 .doc(user.uid)
@@ -506,6 +573,17 @@ const firebaseData = {
                 .catch(function(error) {
                     // this didn't work
                     console.log("Failed to add the document: ", error);
+                });
+            // let the global tracking happen
+            firebase.firestore()
+                .collection(firebaseData.collectionActivity)
+                .add(activityData)
+                .then(function(newDocRef) {
+                    // this worked, fine
+                })
+                .catch(function(error) {
+                    // this didn't work
+                    console.log("Failed to add the activity document: ", error);
                 });
             // we fired off this request to log the data, we also want to keep this a little clean to remove old
             // requests we are no longer interested in
