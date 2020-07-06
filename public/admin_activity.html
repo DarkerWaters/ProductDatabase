@@ -49,7 +49,7 @@
 <body class="landing">
 	<!-- Header -->
 	<header id="header" class="skel-layers-fixed">
-		<h1><a href="index.html">Disrupt Sports: </a></h1>
+		<h1><a href="index.html">Disrupt Sports: Product Database</a></h1>
 		<nav id="nav">
 			<ul>
 				<li>
@@ -61,7 +61,7 @@
 				<li class='menu_admin' style="display: none">
 					<a href="">Admin</a>
 					<ul>
-						<li><a href="admin_activitys.html">Manage Users</a></li>
+						<li><a href="admin_users.html">Manage Users</a></li>
 						<li><a href="admin_activity.html">View Activity</a></li>
 						<li><a href="admin_data_import.html">Pricing Spreadsheet</a></li>
 						<li><a href="admin_data_export.html">Raw Data</a></li>
@@ -88,18 +88,34 @@
 			</header>
 			<div class="row uniform">
 				<div class="4u 12u(3)">
-					<input type="text" name="name" id="name" value="" placeholder="Name" />
-					<label for="name">Name</label>
-					<a class="button special" id='search_name_button' onclick="searchUserNames();">Find...</a>
+					<ul class="actions">
+						<li>
+							<a class="button special" id='search_name_button' onclick="searchUserNames();">Find...</a>
+						</li>
+						<li>
+							<input type="text" name="name" id="name" value="" placeholder="Name" />
+						</li>
+					</ul>
 				</div>
 				<div class="4u 12u(3)">
-					<input type="email" name="email" id="email" value="" placeholder="Email" />
-					<label for="email">Email</label>
-					<a class="button special" id='search_email_button' onclick="searchUserEmails();">Find...</a>
+					<ul class="actions">
+						<li>
+							<a class="button special" id='search_email_button' onclick="searchUserEmails();">Find...</a>
+						</li>
+						<li>
+							<input type="email" name="email" id="email" value="" placeholder="Email" />
+						</li>
+					</ul>
 				</div>
 				<div class="4u 12u(3)">
-					<a class="button special" id='search_all_button' onclick="getAllActivity();">List all activity</a>
-					<p>This will also automatically delete old<br/>(> 1 month) tracking data.</p>
+					<ul class="actions">
+						<li>
+							<label for="search_all_button">Global Data</label>
+						</li>
+						<li>
+							<a class="button special" id='search_all_button' onclick="getAllActivity();">List all activity</a>
+						</li>
+					</ul>
 				</div>
 			</div>
 			<div style="display: none;">

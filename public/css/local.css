@@ -65,7 +65,7 @@ html, body {
 }
 
 .sidebar3 {
-  background: #549AD605;
+  background: #FAF8F7;
   top:60px;
   bottom:30px;
   width: 30%;
@@ -82,7 +82,7 @@ html, body {
 }
 
 .sidebar1, .sidebar2 {
-  background: #549AD605;
+  background: #FAF8F7;
   top:60px;
   bottom:30px;
   width: 30%;
@@ -129,7 +129,7 @@ html, body {
 .cat_desc {
   background-color: #87b5dd;
   color: #545454;
-  padding: 0.2em;
+  padding: 0.2em 0.2em 0.2em 1em;
 }
 
 .cat_notes {
@@ -139,7 +139,7 @@ html, body {
 .cat_name {
   font-size: -webkit-xxx-large;
   background-color: #549AD6;
-  padding: 1em;
+  padding: 0.6em;
 }
 
 .item_name {
@@ -150,7 +150,7 @@ html, body {
 
 .item_qual {
   background-color: #87b5dd;
-  padding-left: 1em;
+  padding-left: 1.5em;
   padding-right: 1em;
 }
 

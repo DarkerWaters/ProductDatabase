@@ -8,12 +8,14 @@ function checkUserState() {
         document.getElementById('not_logged_in').style.display = 'none';
         document.getElementById('submit_access_reminder').style.display = 'none';
         document.getElementById('not_reader').style.display = null;
+        document.getElementById('login_explanation').style.display = null;
         firebaseData.getUserData(user,
             function(firebaseUserData) {
                 // got the data
                 if (firebaseData.isUserReader(firebaseUserData)) {
                     // we are a reader
                     document.getElementById('not_reader').style.display = 'none';
+                    document.getElementById('login_explanation').style.display = 'none';
                 }
                 else {
                     // not a reader
@@ -248,9 +250,11 @@ function onItemFound(resultContainer, separator, itemId, itemData) {
     showButton.onclick = function() {
         if (!table.style.display) {
             table.style.display = 'none';
+            showButton.innerHTML = 'Show Prices...'
         }
         else {
             table.style.display = null;
+            showButton.innerHTML = 'Hide Prices...'
             // log this activity if valid to do so
             firebaseData.logUserActivity('priced', itemId, itemData);
         }

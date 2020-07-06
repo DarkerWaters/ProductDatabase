@@ -100,6 +100,9 @@ function populateCategoryData(categoryId, categoryData) {
     categoryIdSelected = categoryId;
     categoryDataSelected = categoryData;
 
+    // set the title
+    document.getElementById('category_name').innerHTML = categoryData.name;
+    // and fill the edit boxes
     fillEdit('category', 'name', categoryData.name);
     fillEdit('category', 'description', categoryData.description);
     fillEdit('category', 'notes', categoryData.notes);
@@ -116,6 +119,9 @@ function populateItemData(itemId, itemData) {
     itemIdSelected = itemId;;
     itemDataSelected = itemData;
 
+    // set the title
+    document.getElementById('item_name').innerHTML = itemData.name;
+    // and fill the edit boxes
     fillEdit('item', 'name', itemData.name);
     fillEdit('item', 'quality', itemData.quality);
     fillEdit('item', 'description', itemData.description);

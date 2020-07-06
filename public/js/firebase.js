@@ -417,7 +417,14 @@ const firebaseData = {
             firebase.firestore().collection(firebaseData.collectionUsers).doc(userUid).get()
                 .then(function(doc) {
                     if (doc && doc.exists) {
+                        // have the user data, cool - use it
+                        var isNewCachedData = !firebaseData.currentUserData;
                         firebaseData.currentUserData = doc.data();
+                        if (isNewCachedData && firebaseData.currentUserData && firebaseData.currentUserData.isAdmin) {
+                            // we have just retrieved the admin user's data - a good time to delete any
+                            // global data we might have collected over what we actually need
+                            firebaseData.clearAgeingGlobalTrackingData();
+                        }
                     } else {
                         // log this
                         console.log("No document data exists for user", user);
@@ -501,10 +508,6 @@ const firebaseData = {
     getGlobalTrackingData : function(lastVisible, limit, onSuccess) {
         // go through all the expired global data and delete all the old stuff
         var search;
-        var deleteDate = new Date();
-        // Set it to one month ago
-        deleteDate.setMonth(deleteDate.getMonth() - 1);
-        var firebaseDeleteDate = firebase.firestore.Timestamp.fromDate(deleteDate);
         // create the correct search
         if (lastVisible) {
             search = firebase.firestore().collection(firebaseData.collectionActivity)
@@ -526,34 +529,41 @@ const firebaseData = {
                 // this didn't work
                 console.log("Failed to get the log collection to show activity: ", error);
             });
-        if (!lastVisible) {
-            // and find everything that is this date or older to delete
-            firebase.firestore()
-                .collection(firebaseData.collectionActivity)
-                .where("at", "<", firebaseDeleteDate)
-                .get()
-                .then(function(querySnapshot) {
-                    // have all the data, remove all that are too old
-                    querySnapshot.forEach(function (doc) {
-                        // for each log item - delete ones that are too old
-                        firebase.firestore()
-                            .collection(firebaseData.collectionActivity)
-                            .doc(doc.id)
-                            .delete()
-                            .then(function() {
-                                // deleted ok
-                            })
-                            .catch(function (error) {
-                                // error
-                                console.log('failed to delete a global log item', error);
-                            });
-                    });
-                })
-                .catch(function(error) {
-                    // this didn't work
-                    console.log("Failed to get the log collection to clean up: ", error);
+    },
+
+    clearAgeingGlobalTrackingData : function() {
+        // find everything that is this date or older to delete
+        console.log("deleting old activity tracking data");
+        var deleteDate = new Date();
+        // Set it to one month ago
+        deleteDate.setMonth(deleteDate.getMonth() - 1);
+        var firebaseDeleteDate = firebase.firestore.Timestamp.fromDate(deleteDate);
+        // get all the data older than this to delete it
+        firebase.firestore()
+            .collection(firebaseData.collectionActivity)
+            .where("at", "<", firebaseDeleteDate)
+            .get()
+            .then(function(querySnapshot) {
+                // have all the data, remove all that are too old
+                querySnapshot.forEach(function (doc) {
+                    // for each log item - delete ones that are too old
+                    firebase.firestore()
+                        .collection(firebaseData.collectionActivity)
+                        .doc(doc.id)
+                        .delete()
+                        .then(function() {
+                            // deleted ok
+                        })
+                        .catch(function (error) {
+                            // error
+                            console.log('failed to delete a global log item', error);
+                        });
                 });
-        }
+            })
+            .catch(function(error) {
+                // this didn't work
+                console.log("Failed to get the log collection to clean up: ", error);
+            });
     },
 
     addTrackedData : function (user, userData, activity, itemId, itemData) {

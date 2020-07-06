@@ -78,9 +78,18 @@
 				<!-- Side navigation -->
 				<div class="sidebar3">
 					<div>
-						<h2>Search</h2>
-						<input type="text" name="search" id="search" value="" style="background-color: aliceblue" placeholder="Search Terms" />
-						<a class="button special" id='search_button' onclick="onSubmitSearch();">Go...</a>
+						<br/>
+						<ul class="actions">
+							<li>
+								<h2>Search</h2>
+							</li>
+							<li>
+								<input type="text" name="search" id="search" value="" style="background-color: aliceblue" placeholder="Search Terms" />
+							</li>
+							<li>
+								<a class="button special" id='search_button' onclick="onSubmitSearch();">Go...</a>
+							</li>
+						</ul>
 						<!-- hidden the display options as not required-->
 						<div style="display: none;">
 							<div>
@@ -139,7 +148,7 @@
 									</p>
 								</div>
 								<div class="3u 6u(2) 12u$(3)" >
-									<a class="button special" id='quantity_button'>Prices...</a>
+									<a class="button special" id='quantity_button'>Show Prices...</a>
 									<a id='item_url' target="_blank">External Link</a>
 								</div>
 							</div>
@@ -185,7 +194,8 @@
 						<div class="9u 12u(9)">
 							<h2>Welcome to Disrupt Sports' Product Database</h2>
 							<p>This facillity offers you the ability to access all of Disrupt Sports' range of products to quote and price customers accordingly.
-								To gain access, first you must log in, then <a href="mailto:INFO@DISRUPTSPORTS.COM?subject=Product Database Access&body=Dear Disrupt Sports, I would very much like access to your database because...">request access</a> from your Disrupt Sports representative.</p>
+								<span id="login_explanation">To gain access, first you must <a href="javascript:signinFirebase();">log in</a>, then <a href="mailto:INFO@DISRUPTSPORTS.COM?subject=Product Database Access&body=Dear Disrupt Sports, I would very much like access to your database because...">request access</a> from your Disrupt Sports representative.</span>
+							</p>
 						</div>
 						<h3 id='not_logged_in'>You are not logged in, please <a href="javascript:signinFirebase();">log in</a> to create an account and access the data...</h3>
 						<div id='not_reader' class="row uniform">
