@@ -323,6 +323,7 @@ function onSubmitSearch() {
     // search the selected categories for matches, find all the categories to show from those matched
     var categoryContainer = document.getElementById('found_categories');
     var resultContainer = document.getElementById('search_results_container');
+    var noneContainer = document.getElementById('search_results_none');
     var searchTerm = document.getElementById('search').value;
     // clear all the old data
     resultContainer.innerHTML = "";
@@ -334,6 +335,7 @@ function onSubmitSearch() {
         // search for categories
         firebaseData.searchCollectionForWord(firebaseData.collectionCategories, 'name', searchTerm,
             function(querySnapshot) {
+                noneContainer.style.display = (querySnapshot.size == 0 ? null : 'none');
                 // success, add all to the HTML
                 querySnapshot.forEach(function (doc) {
                     // show each of these found documents in the HTML
@@ -343,12 +345,14 @@ function onSubmitSearch() {
             function (error) {
                 // failed
                 console.log('searching failed: ', error);
+                noneContainer.style.display = null;
             });
     }
     if (document.getElementById('search_items').checked) {
         // search for categories
         firebaseData.searchCollectionForWord(firebaseData.collectionItems, 'category_name', searchTerm,
             function(querySnapshot) {
+                noneContainer.style.display = (querySnapshot.size == 0 ? null : 'none');
                 // success, add all to the HTML
                 querySnapshot.forEach(function (doc) {
                     // show each of the categories of the item in the HTML
@@ -358,12 +362,14 @@ function onSubmitSearch() {
             function (error) {
                 // failed
                 console.log('searching failed: ', error);
+                noneContainer.style.display = null;
             });
     }
     if (document.getElementById('search_quantities').checked) {
         // search for categories
         firebaseData.searchCollectionForWord(firebaseData.collectionQuantities, 'category_name', searchTerm,
             function(querySnapshot) {
+                noneContainer.style.display = (querySnapshot.size == 0 ? null : 'none');
                 // success, add all to the HTML
                 querySnapshot.forEach(function (doc) {
                     // show each of the categories of the item in the HTML
@@ -373,6 +379,7 @@ function onSubmitSearch() {
             function (error) {
                 // failed
                 console.log('searching failed: ', error);
+                noneContainer.style.display = null;
             });
     }
 }

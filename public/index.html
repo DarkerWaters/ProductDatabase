@@ -61,7 +61,7 @@
 							<a href="">Admin</a>
 							<ul>
 								<li><a href="admin_users.html">Manage Users</a></li>
-								<li><a href="admin_activity.html">View Activity</a></li>
+								<!--<li><a href="admin_activity.html">View Activity</a></li>-->
 								<li><a href="admin_data_import.html">Pricing Spreadsheet</a></li>
 								<li><a href="admin_data_export.html">Raw Data</a></li>
 								<li><a href="admin_data_delete.html">Delete Data</a></li>
@@ -106,6 +106,9 @@
 							</div>
 						</div>
 						<hr>
+						<div id="search_results_none" style="display: none;">
+							Sorry, but there are no results found. Check your spelling or <a href="mailto:INFO@DISRUPTSPORTS.COM?subject=Product Database Search&body=Dear Disrupt Sports, I couldn't find what I was looking for.">contact</a> your rep.
+						</div>
 						<div id="found_categories">
 							
 						</div>
@@ -194,14 +197,19 @@
 						<div class="9u 12u(9)">
 							<h2>Welcome to Disrupt Sports' Product Database</h2>
 							<p>This facillity offers you the ability to access all of Disrupt Sports' range of products to quote and price customers accordingly.
-								<span id="login_explanation">To gain access, first you must <a href="javascript:signinFirebase();">log in</a>, then <a href="mailto:INFO@DISRUPTSPORTS.COM?subject=Product Database Access&body=Dear Disrupt Sports, I would very much like access to your database because...">request access</a> from your Disrupt Sports representative.</span>
+								<span id="login_explanation">To gain access, first you must <a href="javascript:signinFirebase();">log in</a>, then <a href="mailto:INFO@DISRUPTSPORTS.COM?subject=New Distributor Account Request&body=Dear Disrupt Sports, I would very much like access to your database because...">request access</a> from your Disrupt Sports representative.</span>
+							</p>
+							<p>
+								We’re constantly updating our catalog so If you cant find a product or have any additional questions please drop your rep a quick
+								<a href="mailto:INFO@DISRUPTSPORTS.COM?subject=Product Database Suggestions&body=Dear Disrupt Sports, I have some suggestions to improve your product database offering...">email</a>.
 							</p>
 						</div>
 						<h3 id='not_logged_in'>You are not logged in, please <a href="javascript:signinFirebase();">log in</a> to create an account and access the data...</h3>
 						<div id='not_reader' class="row uniform">
-							<h3>To access the contents of this database, you need to register your interest with Disrupt Sports</h3>
+							<h2>This DB is restricted to authorized Distributors only.</h2>
+							<h3>To access, please register your details and request an account</h3>
 							<div class="6u 12u(6)">
-								<h4>Name</h4>
+								<h4>Full Name</h4>
 								<input type="text" id="user_name" />
 							</div>
 							<div class="6u 12u(6)">

@@ -278,13 +278,16 @@ function updateEmailLinkContents(sourceId) {
     // construct the mail to link
     var hrefContent = "mailto:" + emailEdit.value
                     + "?subject="
-                    + "Your Disrupt Sports Product Database permissions have changed"
+                    + "Your request for a Distributor account to the Disrupt Sports Product Database"
                     + "&body="
                     + "Dear " + nameEdit.value + ","
-                    + "%0D%0AAs requested, your access rights to the Disrupt Sports Database have changed"
-                    + "%0D%0AYou are now "
+                    + "%0D%0AYour request for a Distributor account to the DisruptSports account has been approved"
+                    + "%0D%0AYou can now log in with your email:"
+                    + emailEdit.innerHTML
+                    + "%0D%0AAnd user name:"
                     + userTitle.innerHTML
                     + "%0D%0AIf you believe this to be an error please contact Disrupt Sports as soon as possible to have your access adjusted."
+                    + "%0D%0AIf https://product-database-9d4d8.firebaseapp.com/"
                     ;
     // and set this content properly
     emailLink.href = hrefContent;
