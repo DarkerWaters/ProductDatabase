@@ -120,7 +120,7 @@ exports.updateAdminRole = functions.firestore
             // this is a change in our name, so update all who reference this category
             const newData = { 'category_name' : after.name };
             admin.firestore().collection('items')
-                .where('category_ref', '==', change.ref)
+                .where('category_ref', '==', change.before.ref)
                 .get()
                 .then((querySnapshot) => {
                     // have all the items that reference this category - change the name specified
@@ -138,12 +138,12 @@ exports.updateAdminRole = functions.firestore
                     return 1;
                 })
                 .catch((error) => {
-                    console.error('Failed to find the item from the target cat of ' + change.ref, error);
+                    console.error('Failed to find the item from the target cat of ' + change.before.ref, error);
                     return -1;
                 });
             // and update the quantities
             admin.firestore().collection('quantities')
-                .where('category_ref', '==', change.ref)
+                .where('category_ref', '==', change.before.ref)
                 .get()
                 .then((querySnapshot) => {
                     // have all the quantities that reference this category - change the name specified
@@ -161,7 +161,7 @@ exports.updateAdminRole = functions.firestore
                     return 1;
                 })
                 .catch((error) => {
-                    console.error('Failed to find the quantity from the target cat of ' + change.ref, error);
+                    console.error('Failed to find the quantity from the target cat of ' + change.before.ref, error);
                     return -1;
                 });
         }
@@ -184,7 +184,7 @@ exports.updateAdminRole = functions.firestore
             const newData = { 'item_name' : after.name, 'item_quality' : after.quality };
             // and update the quantities
             admin.firestore().collection('quantities')
-                .where('item_ref', '==', change.ref)
+                .where('item_ref', '==', change.before.ref)
                 .get()
                 .then((querySnapshot) => {
                     // have all the quantities that reference this item - change the name specified
@@ -202,7 +202,7 @@ exports.updateAdminRole = functions.firestore
                     return 1;
                 })
                 .catch((error) => {
-                    console.error('Failed to find the quantity from the target item of ' + change.ref, error);
+                    console.error('Failed to find the quantity from the target item of ' + change.before.ref, error);
                     return -1;
                 });
         }
