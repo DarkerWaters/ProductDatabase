@@ -62,7 +62,7 @@ function onSubmitSearch() {
     // clear all the old data
     categoryContainer.innerHTML = "";
     categoriesFound = [];
-
+    // clear everything
     clearData();
 
     // search for categories only
@@ -218,7 +218,7 @@ function onQuantityFound(table, index, quantityId, quantityData) {
 
 function addTableCell(row, cellId, cellData) {
     var dataElement = document.createElement('td');
-    dataElement.innerHTML = '<input type="text" id="quantity_' + cellId + '_edit" value="' + cellData + '"/>';
+    dataElement.innerHTML = '<input type="text" onchange="setDataChanged(true)" id="quantity_' + cellId + '_edit" value="' + cellData + '"/>';
     row.appendChild(dataElement);
     return dataElement;
 }
@@ -243,11 +243,29 @@ function delQuantity(quantityId) {
     quantityDataToDelete.push(quantityId);
 }
 
+function delCategory() {
+    // delete the selected category
+    if (!categoryIdSelected || !categoryDataSelected) {
+        alert('none selected');
+    } else if (confirm("Are you sure you want to delete the whole CATEGORY!!!")) {
+        // delete the category
+        firebaseData.deleteCategoryData(categoryIdSelected,
+            () => {
+                console.log('deleted category ' + categoryIdSelected);
+                // refresh everything
+                onSubmitSearch();
+            },
+            (error) => {
+                alert('Failed to delete that category', error);
+            });
+    }
+}
+
 function delCategoryItem() {
     // delete the selected category item
     if (!categoryIdSelected || !categoryDataSelected || !itemIdSelected || !itemDataSelected) {
         alert('none selected');
-    } else {
+    } else if (confirm("Are you sure you want to delete the whole item!!!")) {
         // delete the item
         firebaseData.deleteItemData(itemIdSelected,
             () => {
@@ -259,6 +277,18 @@ function delCategoryItem() {
                 alert('Failed to delete that item', error);
             });
     }
+}
+
+function newCategory() {
+    var newData = firebaseData.defaultCategory("new");
+    firebaseData.addNewItemCategory(newData,
+        (newDocRef) => {
+            // refresh everything
+            document.getElementById('search').value = newData.name;
+            onSubmitSearch();
+            // and fill the category
+            populateCategoryData(newDocRef.id, newData);
+        });
 }
 
 function newCategoryItem(categoryId) {
@@ -306,7 +336,7 @@ function addNewQuantity() {
 
 async function onSave() {
     // save the data, put all the category data back into a new object to send to the database
-    if (!categoryIdSelected || !categoryDataSelected || !itemIdSelected || !itemDataSelected) {
+    if (!categoryIdSelected || !categoryDataSelected) {
         alert('none selected');
     }
     else {
@@ -328,97 +358,101 @@ async function onSave() {
                 setDataChanged(true);
             });
 
-        // do the item data too
-        itemDataSelected.name = getEditedData('item', 'name');
-        itemDataSelected.quality = getEditedData('item', 'quality');
-        itemDataSelected.description = getEditedData('item', 'description');
-        itemDataSelected.category_name = categoryDataSelected.name;
-        itemDataSelected.notes = getEditedData('item', 'notes');
-        itemDataSelected.image = getEditedData('item', 'image');
-        itemDataSelected.url = getEditedData('item', 'url');
-        itemDataSelected.physical = getEditedData('item', 'physical');
-        itemDataSelected.colours = getEditedData('item', 'colours');
-        itemDataSelected.supplier = getEditedData('item', 'supplier');
+        if (!itemIdSelected || !itemDataSelected) {
+            // no item selected - don't save
+        } else {
+            // do the item data too
+            itemDataSelected.name = getEditedData('item', 'name');
+            itemDataSelected.quality = getEditedData('item', 'quality');
+            itemDataSelected.description = getEditedData('item', 'description');
+            itemDataSelected.category_name = categoryDataSelected.name;
+            itemDataSelected.notes = getEditedData('item', 'notes');
+            itemDataSelected.image = getEditedData('item', 'image');
+            itemDataSelected.url = getEditedData('item', 'url');
+            itemDataSelected.physical = getEditedData('item', 'physical');
+            itemDataSelected.colours = getEditedData('item', 'colours');
+            itemDataSelected.supplier = getEditedData('item', 'supplier');
 
-        // and send it
-        firebaseData.updateItemData(itemIdSelected, itemDataSelected,
-            function() {
-                // this worked
-                console.log('item data saved');
-            },
-            function(error) {
-                alert('sorry this failed to save the item data: ', error);
-                setDataChanged(true);
-            });
+            // and send it
+            firebaseData.updateItemData(itemIdSelected, itemDataSelected,
+                function() {
+                    // this worked
+                    console.log('item data saved');
+                },
+                function(error) {
+                    alert('sorry this failed to save the item data: ', error);
+                    setDataChanged(true);
+                });
 
-        // and update the remaining quantities
-        for (var i = 0; i < quantityDataSelected.length; ++i) {
-            // for each quantity, get the data from the HTML edit boxes
-            var editedData = getEditedData('quantity', quantityIdsSelected[i] + '_amt_' + i);
-            quantityDataSelected[i].quantity = getPriceData(editedData);
-            // do the reference data too
-            quantityDataSelected[i].category_name = categoryDataSelected.name;
-            quantityDataSelected[i].item_name = itemDataSelected.name;
-            quantityDataSelected[i].item_quality = itemDataSelected.quality;
-            
-            // if a number then take the price, else take it as notes on the price that would be
-            editedData = getEditedData('quantity', quantityIdsSelected[i] + '_gbp_' + i);
-            var editedPrice = getPriceData(editedData);
-            if (editedPrice !== null) {
-                quantityDataSelected[i].gbp = editedPrice;
-                quantityDataSelected[i].gbp_notes = '';
-            } else {
-                quantityDataSelected[i].gbp = 0;
-                quantityDataSelected[i].gbp_notes = editedData;
-            }
-            // have they entered a number for USD?
-            editedData = getEditedData('quantity', quantityIdsSelected[i] + '_usd_' + i);
-            editedPrice = getPriceData(editedData);
-            if (editedPrice !== null) {
-                quantityDataSelected[i].usd = editedPrice;
-                quantityDataSelected[i].usd_notes = '';
-            } else {
-                quantityDataSelected[i].usd = 0;
-                quantityDataSelected[i].usd_notes = editedData;
-            }
-            // have they entered a number for AUD?
-            editedData = getEditedData('quantity', quantityIdsSelected[i] + '_aud_' + i);
-            editedPrice = getPriceData(editedData);
-            if (editedPrice !== null) {
-                quantityDataSelected[i].aud = editedPrice;
-                quantityDataSelected[i].aud_notes = '';
-            } else {
-                quantityDataSelected[i].aud = 0;
-                quantityDataSelected[i].aud_notes = editedData;
-            }
-            // and the notes
-            quantityDataSelected[i].notes = getEditedData('quantity', quantityIdsSelected[i] + '_note_' + i);
-            
-            // now update the value
-            if (quantityDataToDelete.includes(quantityIdsSelected[i])) {
-                // this is in the list to delete, so delete it already!
-                firebaseData.deleteQuantityData(quantityIdsSelected[i],
-                    function() {
-                        // this worked
-                        console.log('quantity ' + i + ' data deleted');
-                        // and refresh the item quantity data now something is deleted
-                        populateItemData(itemIdSelected, itemDataSelected);
-                    },
-                    function(error) {
-                        alert('sorry this failed to delete some quantity data: ', error);
-                        setDataChanged(true);
-                    });
-            } else {
-                // send the update
-                firebaseData.updateQuantityData(quantityIdsSelected[i], quantityDataSelected[i],
-                    function() {
-                        // this worked
-                        console.log('quantity ' + i + ' data saved');
-                    },
-                    function(error) {
-                        alert('sorry this failed to save the quantity data: ', error);
-                        setDataChanged(true);
-                    });
+            // and update the remaining quantities
+            for (var i = 0; i < quantityDataSelected.length; ++i) {
+                // for each quantity, get the data from the HTML edit boxes
+                var editedData = getEditedData('quantity', quantityIdsSelected[i] + '_amt_' + i);
+                quantityDataSelected[i].quantity = getPriceData(editedData);
+                // do the reference data too
+                quantityDataSelected[i].category_name = categoryDataSelected.name;
+                quantityDataSelected[i].item_name = itemDataSelected.name;
+                quantityDataSelected[i].item_quality = itemDataSelected.quality;
+                
+                // if a number then take the price, else take it as notes on the price that would be
+                editedData = getEditedData('quantity', quantityIdsSelected[i] + '_gbp_' + i);
+                var editedPrice = getPriceData(editedData);
+                if (editedPrice !== null) {
+                    quantityDataSelected[i].gbp = editedPrice;
+                    quantityDataSelected[i].gbp_notes = '';
+                } else {
+                    quantityDataSelected[i].gbp = 0;
+                    quantityDataSelected[i].gbp_notes = editedData;
+                }
+                // have they entered a number for USD?
+                editedData = getEditedData('quantity', quantityIdsSelected[i] + '_usd_' + i);
+                editedPrice = getPriceData(editedData);
+                if (editedPrice !== null) {
+                    quantityDataSelected[i].usd = editedPrice;
+                    quantityDataSelected[i].usd_notes = '';
+                } else {
+                    quantityDataSelected[i].usd = 0;
+                    quantityDataSelected[i].usd_notes = editedData;
+                }
+                // have they entered a number for AUD?
+                editedData = getEditedData('quantity', quantityIdsSelected[i] + '_aud_' + i);
+                editedPrice = getPriceData(editedData);
+                if (editedPrice !== null) {
+                    quantityDataSelected[i].aud = editedPrice;
+                    quantityDataSelected[i].aud_notes = '';
+                } else {
+                    quantityDataSelected[i].aud = 0;
+                    quantityDataSelected[i].aud_notes = editedData;
+                }
+                // and the notes
+                quantityDataSelected[i].notes = getEditedData('quantity', quantityIdsSelected[i] + '_note_' + i);
+                
+                // now update the value
+                if (quantityDataToDelete.includes(quantityIdsSelected[i])) {
+                    // this is in the list to delete, so delete it already!
+                    firebaseData.deleteQuantityData(quantityIdsSelected[i],
+                        function() {
+                            // this worked
+                            console.log('quantity ' + i + ' data deleted');
+                            // and refresh the item quantity data now something is deleted
+                            populateItemData(itemIdSelected, itemDataSelected);
+                        },
+                        function(error) {
+                            alert('sorry this failed to delete some quantity data: ', error);
+                            setDataChanged(true);
+                        });
+                } else {
+                    // send the update
+                    firebaseData.updateQuantityData(quantityIdsSelected[i], quantityDataSelected[i],
+                        function() {
+                            // this worked
+                            console.log('quantity ' + i + ' data saved');
+                        },
+                        function(error) {
+                            alert('sorry this failed to save the quantity data: ', error);
+                            setDataChanged(true);
+                        });
+                }
             }
         }
     }

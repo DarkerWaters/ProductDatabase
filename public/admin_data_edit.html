@@ -87,6 +87,7 @@
 						<h2>Search</h2>
 						<input type="text" name="search" id="search" value="" style="background-color: aliceblue" placeholder="Search Terms" />
 						<a class="button special" id='search_button' onclick="onSubmitSearch();">Get Category Data...</a>
+						<a class="button special" id='new_category_button' onclick="newCategory();">New</a>
 						<a class="button" id='save_button' onclick="onSave();">Save</a>
 						<hr>
 						<div id="found_categories">
@@ -104,7 +105,8 @@
 				<!-- One -->
 				<section id="one" class="sidebar_content wrapper style2">
 					<div class="row uniform">
-						<h1 style='background-color: #6DC4FD; padding: 10px;'>Edit the category contents: <span id='category_name'>No Category Selected</span></h1>
+						<h1 style='background-color: #6DC4FD; padding: 10px;'>Edit the category contents: <span id='category_name'>No Category Selected</span>
+							<a class="button special" id='del_category_button' onclick="delCategory();">Delete</a> </h1>
 					</div>
 					<div class="row uniform">
 						<div class="9u 6u(2) 12u$(3)" >
@@ -125,7 +127,7 @@
 					<hr>
 					<div class="row uniform">
 						<h1 style='background-color: #6DC4FD; padding: 10px;'>Edit the item contents: <span id='item_name'>No Item Selected</span>
-						<a class="button special" id='del_item_button' onclick="delCategoryItem();">Delete</a> </h1>
+							<a class="button special" id='del_item_button' onclick="delCategoryItem();">Delete</a> </h1>
 					</div>
 					<div class="row uniform">
 						<div class="9u 6u(2) 12u$(3)" >
