@@ -155,6 +155,16 @@ document.addEventListener('firebaseuserchange', function() {
         function(itemData) {
             databaseData = itemData;
             setContainerData(itemDiv, 'item', 'category_name', itemId, itemData);
+            // go away and get the category for the extra information
+            var catDescription = document.querySelector('#item_category_description');
+            catDescription.innerHTML = '';
+            firebaseData.getCategoryById(itemData.category_ref.id,
+                (categoryDoc) => {
+                    catDescription.innerHTML = categoryDoc.data().description;
+                },
+                (error) => {
+                    catDescription.innerHTML = error;
+                });
             setContainerData(itemDiv, 'item', 'name', itemId, itemData);
             setContainerData(itemDiv, 'item', 'quality', itemId, itemData);
             setContainerData(itemDiv, 'item', 'description', itemId, itemData);
