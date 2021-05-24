@@ -140,6 +140,8 @@ function populateItemData(itemId, itemData) {
 
     // need to get the quantities for this item
     var table = document.getElementById('quantity_data_table');
+    // and clear the body out
+    table.getElementsByTagName('tbody')[0].innerHTML = "";
     firebaseData.getQuantitiesInItem(itemId,
         function(querySnapshot) {
             // have all the items here, add them all to the category

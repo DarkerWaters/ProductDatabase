@@ -106,3 +106,105 @@ exports.updateAdminRole = functions.firestore
         // return the result of this (0 if done nothing)
         return result;
     });
+
+/**
+ * Listen for changes in all documents in the 'item_categories' collection
+ */
+ exports.processCategoryChange = functions.firestore
+    .document('item_categories/{categoryId}')
+    .onUpdate((change, context) => {
+        // this is a write of data
+        const after = change.after.data();
+        const before = change.before.data();
+        if (before && after && before.name && after.name && after.name !== before.name) {
+            // this is a change in our name, so update all who reference this category
+            const newData = { 'category_name' : after.name };
+            admin.firestore().collection('items')
+                .where('category_ref', '==', change.ref)
+                .get()
+                .then((querySnapshot) => {
+                    // have all the items that reference this category - change the name specified
+                    if (querySnapshot) {
+                        // so delete them all please...
+                        querySnapshot.forEach((doc) => {
+                            doc.ref
+                                .set(newData, {merge: true})
+                                .then()
+                                .catch((error) => {
+                                    console.error('Failed to update the item with the new category name', error);
+                                });
+                        });
+                    }
+                    return 1;
+                })
+                .catch((error) => {
+                    console.error('Failed to find the item from the target cat of ' + change.ref, error);
+                    return -1;
+                });
+            // and update the quantities
+            admin.firestore().collection('quantities')
+                .where('category_ref', '==', change.ref)
+                .get()
+                .then((querySnapshot) => {
+                    // have all the quantities that reference this category - change the name specified
+                    if (querySnapshot) {
+                        // so delete them all please...
+                        querySnapshot.forEach((doc) => {
+                            doc.ref
+                                .set(newData, {merge: true})
+                                .then()
+                                .catch((error) => {
+                                    console.error('Failed to update the quantity with the new category name', error);
+                                });
+                        });
+                    }
+                    return 1;
+                })
+                .catch((error) => {
+                    console.error('Failed to find the quantity from the target cat of ' + change.ref, error);
+                    return -1;
+                });
+        }
+        // just return
+        return false;
+    });
+
+/**
+ * Listen for changes in all documents in the 'items' collection
+ */
+ exports.processItemChange = functions.firestore
+    .document('items/{itemId}')
+    .onUpdate((change, context) => {
+        // this is a write of data
+        const after = change.after.data();
+        const before = change.before.data();
+        if (before && after && before.name && after.name && after.name !== before.name) {
+            // this is a change in our name, so update all who reference this item
+            const newData = { 'item_name' : after.name };
+            // and update the quantities
+            admin.firestore().collection('quantities')
+                .where('item_ref', '==', change.ref)
+                .get()
+                .then((querySnapshot) => {
+                    // have all the quantities that reference this item - change the name specified
+                    if (querySnapshot) {
+                        // so delete them all please...
+                        querySnapshot.forEach((doc) => {
+                            doc.ref
+                                .set(newData, {merge: true})
+                                .then()
+                                .catch((error) => {
+                                    console.error('Failed to update the quantity with the new item name', error);
+                                });
+                        });
+                    }
+                    return 1;
+                })
+                .catch((error) => {
+                    console.error('Failed to find the quantity from the target item of ' + change.ref, error);
+                    return -1;
+                });
+        }
+        // just return
+        return false;
+    });
