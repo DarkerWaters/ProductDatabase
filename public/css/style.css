@@ -782,7 +782,7 @@
 		line-height: 3.5em;
 		overflow: hidden;
 		padding: 0 1em;
-		vertical-align: middle;
+		vertical-align: inherit;
 		text-align: center;
 		text-decoration: none;
 		text-overflow: ellipsis;

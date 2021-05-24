@@ -8,6 +8,7 @@ var itemIdSelected;
 var itemDataSelected;
 var quantityIdsSelected;
 var quantityDataSelected;
+var quantityDataToDelete;
 
 function onCategoryFound(categoryContainer, categoryId, categoryData) {
     if (categoriesFound.includes(categoryId)) {
@@ -122,6 +123,7 @@ function populateItemData(itemId, itemData) {
     itemDataSelected = itemData;
     quantityIdsSelected = [];
     quantityDataSelected = [];
+    quantityDataToDelete = [];
 
     // set the title
     document.getElementById('item_name').innerHTML = itemData.name;
@@ -174,6 +176,10 @@ function onQuantityFound(table, index, quantityId, quantityData) {
     addTableCell(newRow, quantityId + '_usd' + '_' + index, quantityData.usd_notes ? quantityData.usd_notes : quantityData.usd);
     addTableCell(newRow, quantityId + '_aud' + '_' + index, quantityData.aud_notes ? quantityData.aud_notes : quantityData.aud);
     addTableCell(newRow, quantityId + '_note' + '_' + index, quantityData.notes ? quantityData.notes : '');
+    // and add the delete button to the end
+    var dataElement = document.createElement('td');
+    dataElement.innerHTML = '<a class="button special" id="del_quantity_button" onclick="delQuantity(\'' + quantityId + '\');">Del</a>';
+    newRow.appendChild(dataElement);
     // and put the row into the table
     tBody.appendChild(newRow);
 }
@@ -196,6 +202,15 @@ function getPriceData(textValue) {
     }
 }
 
+function delQuantity(quantityId) {
+    // get the table
+    var table = document.getElementById('quantity_data_table');
+    // and the row under here
+    var row = table.querySelector('#' + quantityId);
+    row.style.background = 'red';
+    quantityDataToDelete.push(quantityId);
+}
+
 function addNewQuantity() {
     // add a new quantity to the selected item and then add the row to the proper table
     if (!categoryIdSelected || !categoryDataSelected || !itemIdSelected || !itemDataSelected || !quantityIdsSelected || !quantityDataSelected) {
@@ -214,7 +229,7 @@ function addNewQuantity() {
     }
 }
 
-function onSave() {
+async function onSave() {
     // save the data, put all the category data back into a new object to send to the database
     if (!categoryIdSelected || !categoryDataSelected || !itemIdSelected || !itemDataSelected) {
         alert('none selected');
@@ -261,7 +276,7 @@ function onSave() {
                 setDataChanged(true);
             });
 
-        // and the quantities
+        // and update the remaining quantities
         for (var i = 0; i < quantityDataSelected.length; ++i) {
             // for each quantity, get the data from the HTML edit boxes
             var editedData = getEditedData('quantity', quantityIdsSelected[i] + '_amt_' + i);
@@ -303,20 +318,35 @@ function onSave() {
             }
             // and the notes
             quantityDataSelected[i].notes = getEditedData('quantity', quantityIdsSelected[i] + '_note_' + i);
-            // and send it
-            firebaseData.updateQuantityData(quantityIdsSelected[i], quantityDataSelected[i],
-                function() {
-                    // this worked
-                    console.log('quantity ' + i + ' data saved');
-                },
-                function(error) {
-                    alert('sorry this failed to save the quantity data: ', error);
-                    setDataChanged(true);
-                });
+            
+            // now update the value
+            if (quantityDataToDelete.includes(quantityIdsSelected[i])) {
+                // this is in the list to delete, so delete it already!
+                firebaseData.deleteQuantityData(quantityIdsSelected[i],
+                    function() {
+                        // this worked
+                        console.log('quantity ' + i + ' data deleted');
+                        // and refresh the item quantity data now something is deleted
+                        populateItemData(itemIdSelected, itemDataSelected);
+                    },
+                    function(error) {
+                        alert('sorry this failed to delete some quantity data: ', error);
+                        setDataChanged(true);
+                    });
+            } else {
+                // send the update
+                firebaseData.updateQuantityData(quantityIdsSelected[i], quantityDataSelected[i],
+                    function() {
+                        // this worked
+                        console.log('quantity ' + i + ' data saved');
+                    },
+                    function(error) {
+                        alert('sorry this failed to save the quantity data: ', error);
+                        setDataChanged(true);
+                    });
+            }
         }
     }
-
-    
 }
 
 document.addEventListener('firebaseuserchange', function() {

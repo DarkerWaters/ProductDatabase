@@ -883,4 +883,17 @@ const firebaseData = {
                 onFailure ? onFailure(error) : console.log("Failed to update the document: ", error);
             });
     },
+
+    deleteQuantityData : function (quantityDocId, onSuccess, onFailure) {
+        // delete the quantity from the store
+        firebase.firestore().collection(this.collectionQuantities).doc(quantityDocId).delete()
+            .then(function() {
+                // this worked
+                onSuccess ? onSuccess() : null;
+            })
+            .catch(function(error) {
+                // this failed
+                onFailure ? onFailure(error) : console.log("Failed to delete the document: ", error);
+            });
+    },
 };
