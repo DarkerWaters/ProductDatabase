@@ -108,8 +108,8 @@
 					</div>
 					<div class="row uniform">
 						<div class="9u 6u(2) 12u$(3)" >
-							<input type="text" id="category_name_edit" placeholder="Category Name" readonly />
-							<label for="category_name_edit">Category Name (read-only)</label>
+							<input type="text" id="category_name_edit" placeholder="Category Name" />
+							<label for="category_name_edit">Category Name</label>
 							<input type="text" id="category_description_edit" placeholder="Category Description" />
 							<label for="category_description_edit">Category Description</label>
 							
@@ -129,11 +129,11 @@
 					<div class="row uniform">
 						<div class="9u 6u(2) 12u$(3)" >
 							<h3>
-								<input type="text" id="item_name_edit" placeholder="Item Name" readonly />
-								<label for="item_name_edit">Item Name (read-only)</label>
+								<input type="text" id="item_name_edit" placeholder="Item Name" />
+								<label for="item_name_edit">Item Name</label>
 							</h3>
-							<input type="text" id="item_quality_edit" placeholder="Item Quality" readonly />
-							<label for="item_quality_edit">Item Quality (read-only)</label>
+							<input type="text" id="item_quality_edit" placeholder="Item Quality" />
+							<label for="item_quality_edit">Item Quality</label>
 					
 							<input type="text" id="item_description_edit" placeholder="Item Description" />
 							<label for="item_description_edit">Item Description</label>
@@ -169,7 +169,7 @@
 										<th colspan='4'>Pricing (Per Unit - Excluding GST/VAT)</th>
 									</tr>
 									<tr>
-										<th></th>
+										<th><a class="button special" id='add_quantity_button' onclick="addNewQuantity();">Add</a></th>
 										<th>GBP (£)</th>
 										<th>USD ($)</th>
 										<th>AUD ($)</th>

@@ -6,6 +6,8 @@ var categoryIdSelected;
 var categoryDataSelected;
 var itemIdSelected;
 var itemDataSelected;
+var quantityIdsSelected;
+var quantityDataSelected;
 
 function onCategoryFound(categoryContainer, categoryId, categoryData) {
     if (categoriesFound.includes(categoryId)) {
@@ -116,8 +118,10 @@ function populateCategoryData(categoryId, categoryData) {
 }
 
 function populateItemData(itemId, itemData) {
-    itemIdSelected = itemId;;
+    itemIdSelected = itemId;
     itemDataSelected = itemData;
+    quantityIdsSelected = [];
+    quantityDataSelected = [];
 
     // set the title
     document.getElementById('item_name').innerHTML = itemData.name;
@@ -145,9 +149,10 @@ function populateItemData(itemId, itemData) {
     firebaseData.getQuantitiesInItem(itemId,
         function(querySnapshot) {
             // have all the items here, add them all to the category
+            var index = 0;
             querySnapshot.forEach(function(doc) {
                 // for each doc (item) add the data
-                onQuantityFound(table, doc.id, doc.data());
+                onQuantityFound(table, index++, doc.id, doc.data());
             })
         },
         function(error) {
@@ -155,25 +160,58 @@ function populateItemData(itemId, itemData) {
         });
 }
 
-function onQuantityFound(table, quantityId, quantityData) {
+function onQuantityFound(table, index, quantityId, quantityData) {
+    // remember the data we got so we can change it
+    quantityIdsSelected.push(quantityId);
+    quantityDataSelected.push(quantityData);
     // add a row to the table
     var newRow = document.createElement('tr');
     newRow.id = quantityId;
     var tBody = table.getElementsByTagName('tbody')[0];
-    // add the data to this row
-    addTableCell(newRow, quantityData.quantity);
-    addTableCell(newRow, quantityData.gbp_notes ? quantityData.gbp_notes : '£' + quantityData.gbp);
-    addTableCell(newRow, quantityData.usd_notes ? quantityData.usd_notes : '$' + quantityData.usd);
-    addTableCell(newRow, quantityData.aud_notes ? quantityData.aud_notes : 'A$' + quantityData.aud);
-    addTableCell(newRow, quantityData.notes ? quantityData.notes : '');
+    // add the data to this row (make the quantity read only)
+    addTableCell(newRow, quantityId + '_amt' + '_' + index, quantityData.quantity);//.getElementsByTagName('input')[0].setAttribute('readonly', 'true');
+    addTableCell(newRow, quantityId + '_gbp' + '_' + index, quantityData.gbp_notes ? quantityData.gbp_notes : quantityData.gbp);
+    addTableCell(newRow, quantityId + '_usd' + '_' + index, quantityData.usd_notes ? quantityData.usd_notes : quantityData.usd);
+    addTableCell(newRow, quantityId + '_aud' + '_' + index, quantityData.aud_notes ? quantityData.aud_notes : quantityData.aud);
+    addTableCell(newRow, quantityId + '_note' + '_' + index, quantityData.notes ? quantityData.notes : '');
     // and put the row into the table
     tBody.appendChild(newRow);
 }
 
-function addTableCell(row, cellData) {
+function addTableCell(row, cellId, cellData) {
     var dataElement = document.createElement('td');
-    dataElement.innerHTML = cellData;
+    dataElement.innerHTML = '<input type="text" id="quantity_' + cellId + '_edit" value="' + cellData + '"/>';
     row.appendChild(dataElement);
+    return dataElement;
+}
+
+function getPriceData(textValue) {
+    if (typeof textValue != "string") return false // we only process strings!  
+    if (!isNaN(textValue) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+        !isNaN(parseFloat(textValue))) { // ...and ensure strings of whitespace fail
+        // this is a number
+        return parseFloat(textValue);
+    } else {
+        return null;
+    }
+}
+
+function addNewQuantity() {
+    // add a new quantity to the selected item and then add the row to the proper table
+    if (!categoryIdSelected || !categoryDataSelected || !itemIdSelected || !itemDataSelected || !quantityIdsSelected || !quantityDataSelected) {
+        alert('none selected');
+    } else {
+        // add the quantity
+        var newData = firebaseData.defaultQuantity(itemIdSelected, itemDataSelected, -1, 0, "", 0, "", 0, "", "");
+        firebaseData.addNewQuantity(newData, (newQuantityRef) => {
+            // added the new one, add the row
+            var table = document.getElementById('quantity_data_table');
+            var newIndex = table.getElementsByTagName('tbody')[0].childNodes.length;
+            onQuantityFound(table, newIndex, newQuantityRef.id, newData);
+        }, (error) => {
+            alert('Failed to add the new quantity ', error);
+        });
+    }
 }
 
 function onSave() {
@@ -185,6 +223,7 @@ function onSave() {
         // this works by default
         setDataChanged(false);
         // create the category data to send
+        categoryDataSelected.name = getEditedData('category', 'name');
         categoryDataSelected.description = getEditedData('category', 'description');
         categoryDataSelected.notes = getEditedData('category', 'notes');
         categoryDataSelected.image = getEditedData('category', 'image');
@@ -200,7 +239,10 @@ function onSave() {
             });
 
         // do the item data too
+        itemDataSelected.name = getEditedData('item', 'name');
+        itemDataSelected.quality = getEditedData('item', 'quality');
         itemDataSelected.description = getEditedData('item', 'description');
+        itemDataSelected.category_name = categoryDataSelected.name;
         itemDataSelected.notes = getEditedData('item', 'notes');
         itemDataSelected.image = getEditedData('item', 'image');
         itemDataSelected.url = getEditedData('item', 'url');
@@ -218,6 +260,60 @@ function onSave() {
                 alert('sorry this failed to save the item data: ', error);
                 setDataChanged(true);
             });
+
+        // and the quantities
+        for (var i = 0; i < quantityDataSelected.length; ++i) {
+            // for each quantity, get the data from the HTML edit boxes
+            var editedData = getEditedData('quantity', quantityIdsSelected[i] + '_amt_' + i);
+            quantityDataSelected[i].quantity = getPriceData(editedData);
+            // do the reference data too
+            quantityDataSelected[i].category_name = categoryDataSelected.name;
+            quantityDataSelected[i].item_name = itemDataSelected.name;
+            quantityDataSelected[i].item_quality = itemDataSelected.quality;
+            
+            // if a number then take the price, else take it as notes on the price that would be
+            editedData = getEditedData('quantity', quantityIdsSelected[i] + '_gbp_' + i);
+            var editedPrice = getPriceData(editedData);
+            if (editedPrice !== null) {
+                quantityDataSelected[i].gbp = editedPrice;
+                quantityDataSelected[i].gbp_notes = '';
+            } else {
+                quantityDataSelected[i].gbp = 0;
+                quantityDataSelected[i].gbp_notes = editedData;
+            }
+            // have they entered a number for USD?
+            editedData = getEditedData('quantity', quantityIdsSelected[i] + '_usd_' + i);
+            editedPrice = getPriceData(editedData);
+            if (editedPrice !== null) {
+                quantityDataSelected[i].usd = editedPrice;
+                quantityDataSelected[i].usd_notes = '';
+            } else {
+                quantityDataSelected[i].usd = 0;
+                quantityDataSelected[i].usd_notes = editedData;
+            }
+            // have they entered a number for AUD?
+            editedData = getEditedData('quantity', quantityIdsSelected[i] + '_aud_' + i);
+            editedPrice = getPriceData(editedData);
+            if (editedPrice !== null) {
+                quantityDataSelected[i].aud = editedPrice;
+                quantityDataSelected[i].aud_notes = '';
+            } else {
+                quantityDataSelected[i].aud = 0;
+                quantityDataSelected[i].aud_notes = editedData;
+            }
+            // and the notes
+            quantityDataSelected[i].notes = getEditedData('quantity', quantityIdsSelected[i] + '_note_' + i);
+            // and send it
+            firebaseData.updateQuantityData(quantityIdsSelected[i], quantityDataSelected[i],
+                function() {
+                    // this worked
+                    console.log('quantity ' + i + ' data saved');
+                },
+                function(error) {
+                    alert('sorry this failed to save the quantity data: ', error);
+                    setDataChanged(true);
+                });
+        }
     }
 
     

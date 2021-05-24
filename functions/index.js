@@ -116,7 +116,7 @@ exports.updateAdminRole = functions.firestore
         // this is a write of data
         const after = change.after.data();
         const before = change.before.data();
-        if (before && after && before.name && after.name && after.name !== before.name) {
+        if (before && after && after.name !== before.name) {
             // this is a change in our name, so update all who reference this category
             const newData = { 'category_name' : after.name };
             admin.firestore().collection('items')
@@ -178,9 +178,10 @@ exports.updateAdminRole = functions.firestore
         // this is a write of data
         const after = change.after.data();
         const before = change.before.data();
-        if (before && after && before.name && after.name && after.name !== before.name) {
+        if (before && after && 
+            (after.name !== before.name || after.quality !== before.quality)) {
             // this is a change in our name, so update all who reference this item
-            const newData = { 'item_name' : after.name };
+            const newData = { 'item_name' : after.name, 'item_quality' : after.quality };
             // and update the quantities
             admin.firestore().collection('quantities')
                 .where('item_ref', '==', change.ref)
