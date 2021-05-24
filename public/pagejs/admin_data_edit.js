@@ -20,7 +20,8 @@ function onCategoryFound(categoryContainer, categoryId, categoryData) {
         // create a link for this found container
         var catLinkDiv = document.getElementById('template_category_link').cloneNode(true);
         // set the unique ID for this
-        catLinkDiv.innerHTML = categoryData.name;
+        catLinkDiv.id = "link_cat_" + categoryId;
+        catLinkDiv.innerHTML = categoryData.name + '  <a style="color:blue" id="new_cat_item_button" onclick="newCategoryItem(\'' + categoryId + '\');">+</a>';
         // and add to the container
         categoryContainer.appendChild(catLinkDiv);
 
@@ -62,6 +63,8 @@ function onSubmitSearch() {
     categoryContainer.innerHTML = "";
     categoriesFound = [];
 
+    clearData();
+
     // search for categories only
     firebaseData.searchCollectionForWord(firebaseData.collectionCategories, 'name', searchTerm,
         function(querySnapshot) {
@@ -75,6 +78,35 @@ function onSubmitSearch() {
             // failed
             console.log('searching failed: ', error);
         });
+}
+
+function clearData() {
+    // cat data
+    document.getElementById('category_name').innerHTML = '';
+    fillEdit('category', 'name', '');
+    fillEdit('category', 'description', '');
+    fillEdit('category', 'notes', '');
+    fillEdit('category', 'image', '');
+    document.getElementById('category_image').src = '';
+
+    // item data
+    document.getElementById('item_name').innerHTML = '';
+    // and fill the edit boxes
+    fillEdit('item', 'name', '');
+    fillEdit('item', 'quality', '');
+    fillEdit('item', 'description', '');
+    fillEdit('item', 'notes', '');
+    fillEdit('item', 'image', '');
+    fillEdit('item', 'url', '');
+    document.getElementById('item_image').src = '';
+    fillEdit('item', 'physical', '');
+    fillEdit('item', 'colours', '');
+    fillEdit('item', 'supplier', '');
+
+    // need to get the quantities for this item
+    var table = document.getElementById('quantity_data_table');
+    // and clear the body out
+    table.getElementsByTagName('tbody')[0].innerHTML = "";
 }
 
 function fillEdit(level, dataName, dataValue) {
@@ -209,6 +241,49 @@ function delQuantity(quantityId) {
     var row = table.querySelector('#' + quantityId);
     row.style.background = 'red';
     quantityDataToDelete.push(quantityId);
+}
+
+function delCategoryItem() {
+    // delete the selected category item
+    if (!categoryIdSelected || !categoryDataSelected || !itemIdSelected || !itemDataSelected) {
+        alert('none selected');
+    } else {
+        // delete the item
+        firebaseData.deleteItemData(itemIdSelected,
+            () => {
+                console.log('deleted item ' + itemIdSelected);
+                // refresh everything
+                onSubmitSearch();
+            },
+            (error) => {
+                alert('Failed to delete that item', error);
+            });
+    }
+}
+
+function newCategoryItem(categoryId) {
+    // add a new item to the category
+    firebaseData.getCategoryById(categoryId, 
+        (categoryDoc) => {
+            // have the category - add the item to id
+            var categoryData = categoryDoc.data();
+            var newData = firebaseData.defaultItem(categoryId, categoryData, "new", "new");
+            firebaseData.addNewItem(newData,
+                (newDocRef) => {
+                    // refresh everything
+                    onSubmitSearch();
+                    // fill the category and item data for the new one added
+                    populateCategoryData(categoryId, categoryData);
+                    populateItemData(newDocRef.id, newData);
+                },
+                (error) => {
+                    // oops
+                    alert('Failed to add a new item', error);
+                });
+        },
+        (error) => {
+            alert('Failed to get the category to add the item to', error);
+        });
 }
 
 function addNewQuantity() {

@@ -854,6 +854,19 @@ const firebaseData = {
             });
     },
 
+    deleteCategoryData : function (categoryDocId, onSuccess, onFailure) {
+        // delete the category from the store
+        firebase.firestore().collection(this.collectionCategories).doc(categoryDocId).delete()
+            .then(function() {
+                // this worked
+                onSuccess ? onSuccess() : null;
+            })
+            .catch(function(error) {
+                // this failed
+                onFailure ? onFailure(error) : console.log("Failed to delete the document: ", error);
+            });
+    },
+
     updateItemData : function (itemDocId, itemData, onSuccess, onFailure) {
         // we want to auto create the name_lc and the words from the data passed
         this.autoCompleteData(itemData);
@@ -866,6 +879,19 @@ const firebaseData = {
             .catch(function(error) {
                 // this failed
                 onFailure ? onFailure(error) : console.log("Failed to update the document: ", error);
+            });
+    },
+
+    deleteItemData : function (itemDocId, onSuccess, onFailure) {
+        // delete the item from the store
+        firebase.firestore().collection(this.collectionItems).doc(itemDocId).delete()
+            .then(function() {
+                // this worked
+                onSuccess ? onSuccess() : null;
+            })
+            .catch(function(error) {
+                // this failed
+                onFailure ? onFailure(error) : console.log("Failed to delete the document: ", error);
             });
     },
 
