@@ -121,7 +121,6 @@ function removeFirebaseLoginButtons() {
 }
 
 function updateMenuButtons(user, isAdmin) {
-
     // update the sign in buttons on the menu
     var signIn = document.getElementById('firebaseSignIn');
     var signedIn = document.getElementById('firebaseSignedIn');
@@ -226,7 +225,7 @@ var sanitizeHTML = function (str) {
 
 
 const firebaseData = {
-
+    // spec all the collections here for easier getting of data
     collectionCategories : 'item_categories',
     collectionItems : 'items',
     collectionQuantities : 'quantities',

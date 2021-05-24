@@ -342,6 +342,104 @@ function getAllUsers() {
         });
 }
 
+function clean(dataToClean) {
+    if (!dataToClean) {
+        return '';
+    }
+    else {
+        return dataToClean.replace(/(\||\r\n|\n|\r|,)/gm, "");
+    }
+}
+
+async function exportAllUsers() {
+    var progressText = document.getElementById('found_user_container');
+    progressText.innerHTML = "Exporting data for all users...";
+    // create an array of values to export
+    var exportButton = document.querySelector('#export_button');
+    exportButton.classList.add('disabled');
+    
+    // create all the strings in the file right from the data
+    var fileStrings = [];
+    var line = '';
+    // first line can define the seperator we use
+    fileStrings.push('sep=,\n');
+    // the next can be the title row
+    line = 'database ID'
+        + ',Company'
+        + ',Email'
+        + ',Name'
+        + ',Phone'
+        + ',Trade'
+        + ',Trade No'
+        + ',Is Admin'
+        + ',Is Reader'
+        + ',Is Request Pending'
+        + ',Is Tracked'
+        + ',Last Updated'
+        + ',Last Updated By'
+        ;
+    fileStrings.push(line + '\n');
+
+    // get all the users
+    await firebase.firestore().collection(firebaseData.collectionUsers).get()
+        .then(function(querySnapshot) {
+            // this worked
+            querySnapshot.forEach(function (userDoc) {
+                // for each user, put all the data in the array
+                var userData = userDoc.data();
+                // create the line for this
+                var updateDate = userData['last_update'];
+                if (updateDate && updateDate !== null && updateDate !== undefined) {
+                    //updateDate = updateDate.toDate().toISOString().slice(0, 10);
+                    updateDate = updateDate.toDate().toJSON();
+                } else {
+                    updateDate = "never";
+                }
+                line = userDoc.id
+                    + ',' + clean(userData['company']) // company name
+                    + ',' + clean(userData['email']) // email
+                    + ',' + clean(userData['name']) // name
+                    + ',' + clean(userData['phone']) // phone
+                    + ',' + clean(userData['trade']) // Trade
+                    + ',' + clean(userData['trade_no']) // Trade No
+                    + ',' + userData['isAdmin'] // Is Admin
+                    + ',' + userData['isReader'] // Is Reader
+                    + ',' + userData['isRequestPending'] // Is Request Pending
+                    + ',' + userData['isTracked'] // Is Tracked
+                    + ',' + updateDate // Last Updated
+                    + ',' + userData['last_updated_by'] // Last Updated By
+                    ;
+                // create this line in the file
+                progressText.innerHTML = "Getting data for user " + userData['email'];
+                fileStrings.push(line + '\n');
+            });
+        })
+        .catch(function(error) {
+            // this didn't work
+            console.log("Failed to get any matching user documents: ", error);
+        });
+    
+    // and save the file
+    var blob = new Blob([fileStrings], { type: 'text/csv;charset=utf-8;' });
+    if (navigator.msSaveBlob) { // IE 10+
+        navigator.msSaveBlob(blob, filename);
+    } else {
+        var link = document.createElement("a");
+        if (link.download !== undefined) { // feature detection
+            // Browsers that support HTML5 download attribute
+            var url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "DisruptSportsUsers.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+    exportButton.classList.remove('disabled');
+    progressText.innerHTML = "Downloaded export file";
+}
+
 function displayUserData(container, doc) {
     var userDiv = document.getElementById('user_template').cloneNode(true);
     container.appendChild(userDiv);
