@@ -50,6 +50,19 @@ function populateRegistrationForm(firebaseUserData) {
     document.getElementById('user_tbn').value = firebaseUserData['trade_no'];
 }
 
+function onRequestQuote() {
+    // construct the request for a quote
+    var mail = document.createElement("a");
+    mail.href = "mailto:INFO@DISRUPTSPORTS.COM"
+                + "?subject="
+                + "I would like some information about " + document.getElementById('quote_text_input').value
+                + "&body="
+                + "From " + document.getElementById('quote_email_input').value
+                + "%0D%0AIf you could get back to me ASAP, I would very much appreciate it."
+                ;
+    mail.click();
+}
+
 function onSendReminderEmail() {
     // construct the reminder following a request submission
     var mail = document.createElement("a");
