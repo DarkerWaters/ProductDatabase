@@ -148,7 +148,7 @@ exports.updateAdminRole = functions.firestore
                 .then((querySnapshot) => {
                     // have all the quantities that reference this category - change the name specified
                     if (querySnapshot) {
-                        // so delete them all please...
+                        // so update them all please...
                         querySnapshot.forEach((doc) => {
                             doc.ref
                                 .set(newData, {merge: true})
@@ -189,7 +189,7 @@ exports.updateAdminRole = functions.firestore
                 .then((querySnapshot) => {
                     // have all the quantities that reference this item - change the name specified
                     if (querySnapshot) {
-                        // so delete them all please...
+                        // so update them all please...
                         querySnapshot.forEach((doc) => {
                             doc.ref
                                 .set(newData, {merge: true})
@@ -203,6 +203,98 @@ exports.updateAdminRole = functions.firestore
                 })
                 .catch((error) => {
                     console.error('Failed to find the quantity from the target item of ' + change.before.ref, error);
+                    return -1;
+                });
+        }
+        // just return
+        return false;
+    });
+
+/**
+ * Listen for the deletion of a category to delete all accompanying data
+ */
+ exports.processCategoryDeletion = functions.firestore
+    .document('item_categories/{categoryId}')
+    .onDelete((change, context) => {
+        if (change.ref) {
+            // delete associated data then
+            admin.firestore().collection('items')
+                .where('category_ref', '==', change.ref)
+                .get()
+                .then((querySnapshot) => {
+                    // have all the items that reference this category - change the name specified
+                    if (querySnapshot) {
+                        // so delete them all please...
+                        querySnapshot.forEach((doc) => {
+                            // for each doc, delete them all
+                            doc.delete()
+                                .then()
+                                .catch(() => {
+                                    // fine that we failed
+                                });
+                        });
+                    }
+                    return 1;
+                })
+                .catch((error) => {
+                    console.error('Failed to find the item from the target cat of ' + change.ref, error);
+                    return -1;
+                });
+            // and update the quantities
+            admin.firestore().collection('quantities')
+                .where('category_ref', '==', change.ref)
+                .get()
+                .then((querySnapshot) => {
+                    // have all the quantities that reference this category - delete them all
+                    if (querySnapshot) {
+                        // so delete them all please...
+                        querySnapshot.forEach((doc) => {
+                            doc.delete()
+                                .then()
+                                .catch(() => {
+                                    // fine that we failed
+                                });
+                        });
+                    }
+                    return 1;
+                })
+                .catch((error) => {
+                    console.error('Failed to find the quantities from the target cat of ' + change.ref + ' to delete', error);
+                    return -1;
+                });
+        }
+        // just return
+        return false;
+    });
+
+/**
+ * Listen for the deletion of an item to delete all accompanying data
+ */
+exports.processItemDelete = functions.firestore
+    .document('items/{itemId}')
+    .onDelete((change, context) => {
+        // this is a delete of data, delete all the quantities for this item
+        if (change.ref) {
+            // and find the quantities
+            admin.firestore().collection('quantities')
+                .where('item_ref', '==', change.ref)
+                .get()
+                .then((querySnapshot) => {
+                    // have all the quantities that reference this item - change the name specified
+                    if (querySnapshot) {
+                        // so update them all please...
+                        querySnapshot.forEach((doc) => {
+                            doc.delete()
+                                .then()
+                                .catch(() => {
+                                    // fine that we failed
+                                });
+                        });
+                    }
+                    return 1;
+                })
+                .catch((error) => {
+                    console.error('Failed to find the quantity from the target item of ' + change.ref + ' to delete', error);
                     return -1;
                 });
         }
