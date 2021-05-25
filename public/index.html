@@ -48,7 +48,27 @@
 
 		<!-- Header -->
 			<header id="header" class="sidebar_header skel-layers-fixed">
-				<h1><a href="index.html">Disrupt Sports: Product Database</a></h1>
+				<h1><a href="index.html">Disrupt Sports: Product Database</a>
+					<span width="100%">
+						<ul style="display:inline-block; list-style: none; margin: 0; padding-left: 150px; padding-top: 5px; padding-bottom: 10px;">
+							<li style="white-space: nowrap; display: inline-block;"><h4>Send me a quote for</h4></li>
+							<li style="white-space: nowrap; display: inline-block;">
+								<input type="text" id="quote_text_input" placeholder="Name of item(s)" style="background-color: white;"/>
+							</li>
+							<li style="white-space: nowrap; display: inline-block;">
+								<input type="email" id="quote_email_input" placeholder="my email is..." style="background-color: white;"/>
+							</li>
+							<li style="white-space: nowrap; display: inline-block;">
+								<a class="button special" id='quote_button' onclick="onRequestQuote();" style="background-color: green; vertical-align: middle;">Send</a>
+							</li>
+						</ul>
+					</span>
+				<!--<span>Send me a quote for
+					<input type="text" id="quote_text_input" placeholder="Name of item(s)"/>
+					<input type="email" id="quote_email_input" placeholder="my email is..."/>
+					<a class="button special" id='search_button' onclick="onSubmitSearch();">Send</a>
+				</span>-->
+				</h1>
 				<nav id="nav">
 					<ul>
 						<li>
@@ -81,17 +101,17 @@
 						<br/>
 						<ul class="actions">
 							<li>
-								<input type="text" name="search" id="search" value="" style="background-color: aliceblue" placeholder="Search Terms" />
+								<input type="text" name="search" id="search" value="" style="background-color: aliceblue" placeholder="Search" />
 							</li>
 							<li>
 								<a class="button special" id='search_button' onclick="onSubmitSearch();">Go...</a>
 							</li>
 						</ul>
 						<div class="tel-nations">
-							<ul>
-								<li><img src="//cdn.shopify.com/s/files/1/0284/1529/5533/t/2/assets/Aus-flag_15x.png?v=16869283047483579461"><a href="tel:+610280035259" aria-describedby="a11y-external-message">+61 02 8003 5259</a></li>
-								<li><img src="//cdn.shopify.com/s/files/1/0284/1529/5533/t/2/assets/US-Flag_15x.png?v=3015067926451577879"><a href="tel:+14242299300" aria-describedby="a11y-external-message">+1 424 229 9300</a></li>
-								<li><img src="//cdn.shopify.com/s/files/1/0284/1529/5533/t/2/assets/UK-Flag_15x.png?v=6277544244467972645"><a href="tel:+442032870310" aria-describedby="a11y-external-message">+44 20 3287 0310</a></li>
+							<ul style="list-style: none;">
+								<li><img src="//cdn.shopify.com/s/files/1/0284/1529/5533/t/2/assets/Aus-flag_15x.png?v=16869283047483579461"><a href="tel:+610280035259" aria-describedby="a11y-external-message" style="margin-left: 20px;">+61 02 8003 5259</a></li>
+								<li><img src="//cdn.shopify.com/s/files/1/0284/1529/5533/t/2/assets/US-Flag_15x.png?v=3015067926451577879"><a href="tel:+14242299300" aria-describedby="a11y-external-message" style="margin-left: 20px;">+1 424 229 9300</a></li>
+								<li><img src="//cdn.shopify.com/s/files/1/0284/1529/5533/t/2/assets/UK-Flag_15x.png?v=6277544244467972645"><a href="tel:+442032870310" aria-describedby="a11y-external-message" style="margin-left: 20px;">+44 20 3287 0310</a></li>
 							</ul>
 						</div>
 						<!-- hidden the display options as not required-->
@@ -195,19 +215,6 @@
 				<!-- One -->
 				<section id="one" class="sidebar_content wrapper style2">
 					<div class="row uniform">
-						<div class="3u 12u(3)">
-							<img id='logo_image' src='images/logo_square.png' style="height: 100%;"/>
-						</div>
-						<div class="9u 12u(9)">
-							<h2>Welcome to Disrupt Sports' Product Database</h2>
-							<p>This facillity offers you the ability to access all of Disrupt Sports' range of products to quote and price customers accordingly.
-								<span id="login_explanation">To gain access, first you must <a href="javascript:signinFirebase();">log in</a>, then <a href="mailto:INFO@DISRUPTSPORTS.COM?subject=New Distributor Account Request&body=Dear Disrupt Sports, I would very much like access to your database because...">request access</a> from your Disrupt Sports representative.</span>
-							</p>
-							<p>
-								We’re constantly updating our catalog so If you cant find a product or have any additional questions please drop your rep a quick
-								<a href="mailto:INFO@DISRUPTSPORTS.COM?subject=Product Database Suggestions&body=Dear Disrupt Sports, I have some suggestions to improve your product database offering...">email</a>.
-							</p>
-						</div>
 						<h3 id='not_logged_in'>You are not logged in, please <a href="javascript:signinFirebase();">log in</a> to create an account and access the data...</h3>
 						<div id='not_reader' class="row uniform">
 							<h2>This DB is restricted to authorized Distributors only.</h2>
@@ -259,7 +266,25 @@
 						<div id="firebaseui-auth-container" style="display: none;"></div>
 					</div>
 					<div id="search_results_none_container" >
-						<img id='category_image' class='image fit' src='images/large_image.jpg'/>
+						<!-- <img id='category_image' class='image fit' src='images/large_image.jpg'/> -->
+						<div class="flexible-container">
+							<iframe src="./media/Disrupt_Vid_NewTrack.mp4" type = "video/mp4" frameborder="0" style="border:0"></iframe>
+						</div>
+						<div class="row uniform">
+							<div class="3u 12u(3)">
+								<img id='logo_image' src='images/logo_square.png' style="height: 100%;"/>
+							</div>
+							<div class="9u 12u(9)">
+								<h2>Welcome to Disrupt Sports' Product Database</h2>
+								<p>This facillity offers you the ability to access all of Disrupt Sports' range of products to quote and price customers accordingly.
+									<span id="login_explanation">To gain access, first you must <a href="javascript:signinFirebase();">log in</a>, then <a href="mailto:INFO@DISRUPTSPORTS.COM?subject=New Distributor Account Request&body=Dear Disrupt Sports, I would very much like access to your database because...">request access</a> from your Disrupt Sports representative.</span>
+								</p>
+								<p>
+									We’re constantly updating our catalog so If you cant find a product or have any additional questions please drop your rep a quick
+									<a href="mailto:INFO@DISRUPTSPORTS.COM?subject=Product Database Suggestions&body=Dear Disrupt Sports, I have some suggestions to improve your product database offering...">email</a>.
+								</p>
+							</div>
+						</div>
 					</div>
 					<div id="search_results_container" >
 					</div>
