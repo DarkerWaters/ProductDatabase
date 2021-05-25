@@ -138,7 +138,7 @@ exports.updateAdminRole = functions.firestore
                     return 1;
                 })
                 .catch((error) => {
-                    console.error('Failed to find the item from the target cat of ' + change.before.ref, error);
+                    console.error('Failed to find the item from the target cat of ' + change.before.ref.id, error);
                     return -1;
                 });
             // and update the quantities
@@ -161,7 +161,7 @@ exports.updateAdminRole = functions.firestore
                     return 1;
                 })
                 .catch((error) => {
-                    console.error('Failed to find the quantity from the target cat of ' + change.before.ref, error);
+                    console.error('Failed to find the quantity from the target cat of ' + change.before.ref.id, error);
                     return -1;
                 });
         }
@@ -202,7 +202,7 @@ exports.updateAdminRole = functions.firestore
                     return 1;
                 })
                 .catch((error) => {
-                    console.error('Failed to find the quantity from the target item of ' + change.before.ref, error);
+                    console.error('Failed to find the quantity from the target item of ' + change.before.ref.id, error);
                     return -1;
                 });
         }
@@ -227,17 +227,20 @@ exports.updateAdminRole = functions.firestore
                         // so delete them all please...
                         querySnapshot.forEach((doc) => {
                             // for each doc, delete them all
-                            doc.delete()
-                                .then()
-                                .catch(() => {
+                            doc.ref.delete()
+                                .then(() => {
+                                    return 0;
+                                })
+                                .catch((error) => {
                                     // fine that we failed
+                                    console.log("Failed to delete item", error);
                                 });
                         });
                     }
                     return 1;
                 })
                 .catch((error) => {
-                    console.error('Failed to find the item from the target cat of ' + change.ref, error);
+                    console.error('Failed to find the item from the target cat of ' + change.ref.id, error);
                     return -1;
                 });
             // and update the quantities
@@ -249,17 +252,20 @@ exports.updateAdminRole = functions.firestore
                     if (querySnapshot) {
                         // so delete them all please...
                         querySnapshot.forEach((doc) => {
-                            doc.delete()
-                                .then()
-                                .catch(() => {
+                            doc.ref.delete()
+                                .then(() => {
+                                    return 0;
+                                })
+                                .catch((error) => {
                                     // fine that we failed
+                                    console.log("Failed to delete quantity", error);
                                 });
                         });
                     }
                     return 1;
                 })
                 .catch((error) => {
-                    console.error('Failed to find the quantities from the target cat of ' + change.ref + ' to delete', error);
+                    console.error('Failed to find the quantities from the target cat of ' + change.ref.id + ' to delete', error);
                     return -1;
                 });
         }
@@ -284,17 +290,20 @@ exports.processItemDelete = functions.firestore
                     if (querySnapshot) {
                         // so update them all please...
                         querySnapshot.forEach((doc) => {
-                            doc.delete()
-                                .then()
-                                .catch(() => {
+                            doc.ref.delete()
+                                .then(() => {
+                                    return 0;
+                                })
+                                .catch((error) => {
                                     // fine that we failed
+                                    console.log("Failed to delete quantity", error);
                                 });
                         });
                     }
                     return 1;
                 })
                 .catch((error) => {
-                    console.error('Failed to find the quantity from the target item of ' + change.ref + ' to delete', error);
+                    console.error('Failed to find the quantity from the target item of ' + change.ref.id + ' to delete', error);
                     return -1;
                 });
         }

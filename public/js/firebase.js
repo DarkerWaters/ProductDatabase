@@ -865,6 +865,55 @@ const firebaseData = {
                 // this failed
                 onFailure ? onFailure(error) : console.log("Failed to delete the document: ", error);
             });
+        const categoryDocRef = firebase.firestore()
+            .collection(this.collectionCategories)
+            .doc(categoryDocId);
+        // and any items for this category
+        firebase.firestore().collection(this.collectionItems)
+            .where('category_ref', '==', categoryDocRef)
+            .get()
+            .then((querySnapshot) => {
+                // have all the items that reference this category - delete them
+                if (querySnapshot) {
+                    // so delete them all please...
+                    querySnapshot.forEach((doc) => {
+                        // delete each document
+                        doc.ref.delete()
+                            .then()
+                            .catch((error) => {
+                                console.error('Failed to delete the item', error);
+                            });
+                    });
+                }
+                return 1;
+            })
+            .catch((error) => {
+                console.error('Failed to find the item from the target cat of ' + categoryDocId, error);
+                return -1;
+            });
+        // and any quantities for this category
+        firebase.firestore().collection(this.collectionQuantities)
+            .where('category_ref', '==', categoryDocRef)
+            .get()
+            .then((querySnapshot) => {
+                // have all the quantities that reference this category - delete them
+                if (querySnapshot) {
+                    // so delete them all please...
+                    querySnapshot.forEach((doc) => {
+                        // delete each document
+                        doc.ref.delete()
+                            .then()
+                            .catch((error) => {
+                                console.error('Failed to delete the quantity', error);
+                            });
+                    });
+                }
+                return 1;
+            })
+            .catch((error) => {
+                console.error('Failed to find the quantities from the target cat of ' + categoryDocId, error);
+                return -1;
+            });
     },
 
     updateItemData : function (itemDocId, itemData, onSuccess, onFailure) {
@@ -892,6 +941,32 @@ const firebaseData = {
             .catch(function(error) {
                 // this failed
                 onFailure ? onFailure(error) : console.log("Failed to delete the document: ", error);
+            });
+        const itemDocRef = firebase.firestore()
+            .collection(this.collectionItems)
+            .doc(itemDocId);
+        // and any quantities for this item
+        firebase.firestore().collection(this.collectionQuantities)
+            .where('item_ref', '==', itemDocRef)
+            .get()
+            .then((querySnapshot) => {
+                // have all the quantities that reference this item - delete them
+                if (querySnapshot) {
+                    // so delete them all please...
+                    querySnapshot.forEach((doc) => {
+                        // delete each document
+                        doc.ref.delete()
+                            .then()
+                            .catch((error) => {
+                                console.error('Failed to delete the quantity', error);
+                            });
+                    });
+                }
+                return 1;
+            })
+            .catch((error) => {
+                console.error('Failed to find the quantities from the target item of ' + itemDocId, error);
+                return -1;
             });
     },
 
