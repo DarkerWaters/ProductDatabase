@@ -21,7 +21,7 @@ function onCategoryFound(categoryContainer, categoryId, categoryData) {
         var catLinkDiv = document.getElementById('template_category_link').cloneNode(true);
         // set the unique ID for this
         catLinkDiv.id = "link_cat_" + categoryId;
-        catLinkDiv.innerHTML = categoryData.name + '  <a style="color:blue" id="new_cat_item_button" onclick="newCategoryItem(\'' + categoryId + '\');">+</a>';
+        catLinkDiv.innerHTML = categoryData.name + '  <a style="color:blue; font-size:0.6em; cursor:pointer;" id="new_cat_item_button" onclick="newCategoryItem(\'' + categoryId + '\');">+ new item</a>';
         // and add to the container
         categoryContainer.appendChild(catLinkDiv);
 
