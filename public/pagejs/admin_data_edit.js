@@ -96,9 +96,19 @@ function clearData() {
     fillEdit('item', 'quality', '');
     fillEdit('item', 'description', '');
     fillEdit('item', 'notes', '');
-    fillEdit('item', 'image', '');
+    fillEdit('item', 'image1', '');
+    fillEdit('item', 'image2', '');
+    fillEdit('item', 'image3', '');
+    fillEdit('item', 'image4', '');
+    fillEdit('item', 'image5', '');
+    fillEdit('item', 'image6', '');
     fillEdit('item', 'url', '');
-    document.getElementById('item_image').src = '';
+    document.getElementById('item_image1').src = '';
+    document.getElementById('item_image2').src = '';
+    document.getElementById('item_image3').src = '';
+    document.getElementById('item_image4').src = '';
+    document.getElementById('item_image5').src = '';
+    document.getElementById('item_image6').src = '';
     fillEdit('item', 'physical', '');
     fillEdit('item', 'colours', '');
     fillEdit('item', 'supplier', '');
@@ -164,14 +174,28 @@ function populateItemData(itemId, itemData) {
     fillEdit('item', 'quality', itemData.quality);
     fillEdit('item', 'description', itemData.description);
     fillEdit('item', 'notes', itemData.notes);
-    fillEdit('item', 'image', itemData.image);
+    fillEdit('item', 'image1', itemData.image);
+    fillEdit('item', 'image2', itemData.image2);
+    fillEdit('item', 'image3', itemData.image3);
+    fillEdit('item', 'image4', itemData.image4);
+    fillEdit('item', 'image5', itemData.image5);
+    fillEdit('item', 'image6', itemData.image6);
     fillEdit('item', 'url', itemData.url);
 
-    // and do the image
-    var image = document.getElementById('item_image');
-    if (itemData.image) {
-        image.src = itemData.image;
-    }
+    // and do the images
+    var image = document.getElementById('item_image1');
+    image.src = itemData.image ? itemData.image : './images/logo_square.png';
+    image = document.getElementById('item_image2');
+    image.src = itemData.image2 ? itemData.image2 : './images/logo_square.png';
+    image = document.getElementById('item_image3');
+    image.src = itemData.image3 ? itemData.image3 : './images/logo_square.png';
+    image = document.getElementById('item_image4');
+    image.src = itemData.image4 ? itemData.image4 : './images/logo_square.png';
+    image = document.getElementById('item_image5');
+    image.src = itemData.image5 ? itemData.image5 : './images/logo_square.png';
+    image = document.getElementById('item_image6');
+    image.src = itemData.image6 ? itemData.image6 : './images/logo_square.png';
+    
     fillEdit('item', 'physical', itemData.physical);
     fillEdit('item', 'colours', itemData.colours);
     fillEdit('item', 'supplier', itemData.supplier);
@@ -367,7 +391,12 @@ async function onSave() {
             itemDataSelected.description = getEditedData('item', 'description');
             itemDataSelected.category_name = categoryDataSelected.name;
             itemDataSelected.notes = getEditedData('item', 'notes');
-            itemDataSelected.image = getEditedData('item', 'image');
+            itemDataSelected.image = getEditedData('item', 'image1');
+            itemDataSelected.image2 = getEditedData('item', 'image2');
+            itemDataSelected.image3 = getEditedData('item', 'image3');
+            itemDataSelected.image4 = getEditedData('item', 'image4');
+            itemDataSelected.image5 = getEditedData('item', 'image5');
+            itemDataSelected.image6 = getEditedData('item', 'image6');
             itemDataSelected.url = getEditedData('item', 'url');
             itemDataSelected.physical = getEditedData('item', 'physical');
             itemDataSelected.colours = getEditedData('item', 'colours');

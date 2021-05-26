@@ -164,11 +164,13 @@ function onCategoryFound(categoryContainer, resultContainer, categoryId, categor
         resultContainer.appendChild(separator);
 
         // we will also want to show all the items under this category
+        currentImageIndices = new Map();
         firebaseData.getItemsInCategory(categoryId,
             function(querySnapshot) {
                 // have all the items here, add them all to the category
                 querySnapshot.forEach(function(doc) {
                     // for each doc (item) add the data
+                    currentImageIndices[doc.id] = 0;
                     onItemFound(resultContainer, separator, doc.id, doc.data());
                 })
             },
@@ -185,6 +187,69 @@ function updateQuoteButton(itemId, quoteButton, gbpCheck, usdCheck, audCheck) {
     }
     else {
         quoteButton.classList.add('disabled');
+    }
+}
+
+function changeItemImage(delta, itemId, itemData, image, previousButton, nextButton) {
+    currentImageIndices[itemId] = currentImageIndices[itemId] + delta;
+    if (currentImageIndices[itemId] > 5) {
+        currentImageIndices[itemId] = 0;
+    } else if (currentImageIndices[itemId] < 0) {
+        currentImageIndices[itemId] = 5;
+    }
+    // and set it
+    setItemImage(itemId, itemData, image, previousButton, nextButton);
+}
+
+function setItemImage(itemId, itemData, image, previousButton, nextButton) {
+    var imageSrc;
+    for (var i = currentImageIndices[itemId]; i < 6; ++i) {
+        switch(i) {
+            case 0:
+                imageSrc = itemData.image ? itemData.image : imageSrc;
+                break;
+            case 1:
+                imageSrc = itemData.image2 ? itemData.image2 : imageSrc;
+                break;
+            case 2:
+                imageSrc = itemData.image3 ? itemData.image3 : imageSrc;
+                break;
+            case 3:
+                imageSrc = itemData.image4 ? itemData.image4 : imageSrc;
+                break;
+            case 4:
+                imageSrc = itemData.image5 ? itemData.image5 : imageSrc;
+                break;
+            case 5:
+            default:
+                imageSrc = itemData.image6 ? itemData.image6 : imageSrc;
+                break;
+        }
+        if (imageSrc) {
+            // found data at this index, stop looking
+            break;
+        }
+    };
+    if (imageSrc) {
+        image.src = imageSrc;
+        if (itemData.image2 || itemData.image3 || itemData.image4 || itemData.image5 || itemData.image6) {
+            // there are other images
+            nextButton.style.display = null;
+            previousButton.style.display = null;
+        } else {
+            // there's only one image
+            nextButton.style.display = 'none';
+            previousButton.style.display = 'none';
+        }
+    } else if (currentImageIndices[itemId] == 0) {
+        // no images at all!
+        image.src = './images/logo_square.png';
+        nextButton.style.display = 'none';
+        previousButton.style.display = 'none';
+    } else {
+        // try from the start again
+        currentImageIndices[itemId] = 0;
+        setItemImage(itemId, itemData, image, previousButton, nextButton);
     }
 }
 
@@ -226,10 +291,22 @@ function onItemFound(resultContainer, separator, itemId, itemData) {
     
     // and do the image
     var image = itemDiv.querySelector('#item_image');
+    var previousButton = itemDiv.querySelector('#image_previous_button');
+    var nextButton = itemDiv.querySelector('#image_next_button');
+    // set the correct id of the image and the buttons
     image.id = "item_image_" + itemId;
-    if (itemData.image) {
-        image.src = itemData.image;
-    }
+    previousButton.id = "item_image_prev_" + itemId;
+    nextButton.id = "item_image_next_" + itemId;
+    // and set the first image
+    setItemImage(itemId, itemData, image, previousButton, nextButton);
+    // setup the next and previous functions
+    previousButton.onclick = () => {
+        changeItemImage(-1, itemId, itemData, image, previousButton, nextButton);
+    };
+    nextButton.onclick = () => {
+        changeItemImage(+1, itemId, itemData, image, previousButton, nextButton);
+    };
+    
     // and the link
     var linkTitle = itemDiv.querySelector('#item_url_' + itemId)
     if (itemData.url && linkTitle) {
